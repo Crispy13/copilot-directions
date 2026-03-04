@@ -7,7 +7,7 @@ Deploy subagents to do the following steps:
 
 1. Understand this workspace and codebase for the main goal.
 
-2. Read `copilot-project-plan.md` for the main goal and plan of the project. You can do downstream tasks without this file. Request project plan file to user if the file does not exist.
+2. Read `copilot-project-plan.md` for the main goal and plan of the project. You can't do next steps without this file. Request project plan file to user if the file does not exist.
 
 3. Make `copilot-desk/` folder. It will contains decisions, notes, and other relevant information for the project(e.g. workflow for tasks, prefered libraries, coding preferences, etc.). 
 
