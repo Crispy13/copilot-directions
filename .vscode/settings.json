@@ -1,0 +1,8 @@
+{
+    "chat.agent.maxRequests": 1000,
+    "github.copilot.chat.responsesApiReasoningEffort": "high",
+    "chat.tools.terminal.blockDetectedFileWrites": "never",
+    "github.copilot.chat.organizationCustomAgents.enabled": false,
+    "github.copilot.chat.organizationInstructions.enabled": false,
+    "chat.customAgentInSubagent.enabled": true
+}
