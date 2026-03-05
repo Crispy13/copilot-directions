@@ -1,22 +1,25 @@
 ---
 name: work_for_goal
-description: Work for the main goal with planning, execution, and reporting.
+description: Automates project planning, execution, and reporting for main project goals autonomously.
 ---
 
-<!-- The difference from `work_for_request` is:
-1. Deploying subagents is not directed.
-2. Confirmation for the next step is not requested.
- -->
+<!-- 
+This prompt does NOT require user confirmation between tasks, unlike `work_for_request`.
+-->
 
-## 1. Decide the next step for the main goal
+You MUST perform the following plan-execute-report cycle:
 
-Run a custom agent named exactly 'Plan' as subagent to do the following:
-1. Read [project context instructions](../instructions/project_context.instructions.md) to understand the project context.
-2. Check the current plan and progress.
-3. Modify or generate the current plan. Plan for maximum productivity(as many tasks as possible), but be careful not to let the volume of work hinder your progress. You don't need to modify the plan if it is still valid and tasks remain in the backlog.
+## 1. Goal Planning
+Deploy a subagent named exactly 'Plan' to:
+- Read the instructions at `../instructions/project_context.instructions.md`.
+- Evaluate the current plan and progress in the workspace.
+- Update or generate the `copilot-current-plan.md` to maximize productivity, ensuring actionable tasks. Skip updating if it's already valid.
 
-## 2. Implement the plan
-Run subagents to implement the current plan. Leverage subagents for every possible task to keep context clean. So run a new subagent for each distinct task: implementation, research, testing, debugging, etc. Proceed through the backlog continuously without stopping between tasks. Only pause execution if you encounter a critical blocker, require clarification, or reach a milestone that necessitates manual verification.
+## 2. Autonomous Execution
+You MUST deploy subagents to autonomously implement the tasks defined in the plan.
+- Use a dedicated subagent for each distinct task (e.g., implementation, research, testing, debugging).
+- Proceed sequentially through the backlog WITHOUT stopping between tasks.
+- Only pause execution if you encounter a critical blocker, require clarification, or hit a defined milestone requiring manual verification.
 
-## 3. Report
-Upon reaching a natural stopping point, deploy subagents to provide a comprehensive report.
+## 3. Reporting
+Once you reach a natural stopping point, deploy a subagent to provide a comprehensive report detailing the completed tasks, remaining backlog, and any uncovered issues.

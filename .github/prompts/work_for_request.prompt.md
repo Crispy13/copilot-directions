@@ -1,15 +1,20 @@
 ---
 name: work_for_request
-description: Base prompt to plan-work-report cycle for a request.
+description: Interactive plan-work-report cycle for handling isolated user requests.
 ---
 
 <!-- 
-This prompt generally does not direct the agent to deploy subagents. 
-This is supposed to be used for simple tasks, where we can keep context clean more easily than large and complex tasks. 
+This prompt generally avoids deploying subagents because it handles simple tasks.
+It explicitly requires user confirmation before execution.
 -->
 
-1. Use skill "plan" to plan tasks for user request. Plan for maximum productivity(as many tasks as possible), but be careful not to let the volume of work hinder your progress. Show the plan as it is to user in dialogue. Use the #askQuestions tool to seek user confirmation. Do not place the plan text inside the tool's question placeholder; keep the plan in the main chat and use the tool only for confirmation. If the user refuses the plan, then repeat step 1 to generate a modified plan with user's feedback. If the user accepts the plan, then proceed to step 2.
+You MUST perform the following interactive workflow:
 
-2. Implement the plan. Do not stop between tasks. Work through the backlog as far as possible. Only pause execution if you encounter a critical blocker, require user clarification, or reach a milestone that requires manual verification.
+1. **Interactive Planning:** Use the `plan` skill to generate actionable steps resolving the user's request. Maximize productivity while avoiding unmanageable task volume. Present the plan directly within your chat message.
+   - You MUST use the `vscode_askQuestions` tool to seek the user's explicit confirmation.
+   - Do NOT place the plan text inside the tool's question property; output the plan plainly in the main chat.
+   - If the user rejects the plan, you MUST restart Step 1 incorporating their feedback.
+   
+2. **Execution Phase:** Once the plan is confirmed, execute it sequentially. Do NOT stop between tasks. Work through the backlog continuously. You may only pause if you encounter a critical blocker or require further clarification.
 
-3. Deploy subagent to make a detailed report, based on the plan and the work done. Show the next steps if any.
+3. **Status Reporting:** Deploy a subagent (or summarize directly) to generate a detailed report based on the executed plan, identifying what was achieved and what the next steps are.

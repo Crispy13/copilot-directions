@@ -1,21 +1,24 @@
 ---
-description: Describe where the project context files are and what they contain. 
+description: Define locations and rules for project context, planning, and documentation files.
 applyTo: '**'
 ---
 
-## Project Goal
-- File name: ${workspaceFolder}/copilot-project-plan.md
-- Description: This file contains the main goal and plan for the project. It should be created at the beginning of the project and updated as needed. It should be concise but informative, providing a clear direction for the project.
+# Project Context Reference
 
-## Project Desk
-- Folder name: ${workspaceFolder}/copilot-desk/
-- Description: Record various decisions, important information, and reference materials as you progress with your work.
+You must utilize the following files and directories to maintain project alignment and track progress. Review relevant context files before making changes, and update them when milestones are reached.
 
-## Codebase Overview
-- File name: ${workspaceFolder}/copilot-desk/CODEBASE.md
-- Description: This file contains an overview of the codebase, including the main components, architecture, and any relevant information that can help understand the codebase. 
+## 1. Project Goal (`copilot-project-plan.md`)
+- **Purpose:** Defines the high-level objective and long-term plan for the project.
+- **Agent Rule:** Read this to understand the core mission. Propose updates only when the fundamental direction or scope of the project changes.
 
-## Current Working Plan
-- File name: ${workspaceFolder}/copilot-current-plan.md
-- Description: This file contains the current working plan for the project. It should be updated regularly based on the progress of the project and any changes in direction. It should be concise and focused on the next steps to be taken.
+## 2. Current Working Plan (`copilot-current-plan.md`)
+- **Purpose:** Tracks immediate next steps, current tasks, and recent progress.
+- **Agent Rule:** Read this to know what to work on next. Update this file continuously as tasks are completed or new actionable steps are identified.
 
+## 3. Codebase Overview (`copilot-desk/CODEBASE.md`)
+- **Purpose:** Explains architectural decisions, main components, and project structure.
+- **Agent Rule:** Use this file to understand how different modules interact. Update it when a major component, new service, or architectural pattern is introduced.
+
+## 4. Project Desk (`copilot-desk/`)
+- **Purpose:** A directory for storing decisions, reference materials, technical specs, and scratchpad notes.
+- **Agent Rule:** Save important design choices, data schemas, or reference snippets here as separate Markdown files to retain knowledge across sessions.
