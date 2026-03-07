@@ -6,9 +6,9 @@ applyTo: '**/*.rs'
 
 2. Prefer `tracing` and `tracing-subscriber` for logging over `println!` or `eprintln!` for better performance and flexibility.  
   
-Make at least two subscriber init function:
+Make at least two subscriber init functions:
 ```rust
-# one for developement including callsite. (e.g. test)
+# one for development including callsite. (e.g. test)
 .with_timer(ChronoLocal::rfc_3339())
 .with_file(true)
 .with_line_number(true)
@@ -24,4 +24,4 @@ Make at least two subscriber init function:
 
 3. Use `debug-release` profile for testing and debugging. If Cargo.toml does not have it, ask user to add it.
 
-4. Prefer enum or generic codes over dynamic dispatch (trait objects) for better performance and compile-time checks.
+4. Prefer enums or generic code over dynamic dispatch (trait objects) for better performance and compile-time checks.

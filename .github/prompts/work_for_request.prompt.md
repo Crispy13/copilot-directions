@@ -1,20 +1,25 @@
 ---
 name: work_for_request
-description: Interactive plan-work-report cycle for handling isolated user requests.
+description: Interactive plan-work-report cycle for handling isolated user requests or side quests.
 ---
-
-<!-- 
-This prompt generally avoids deploying subagents because it handles simple tasks.
-It explicitly requires user confirmation before execution.
--->
 
 You MUST perform the following interactive workflow:
 
-1. **Interactive Planning:** Use the `plan` skill to generate actionable steps resolving the user's request. Maximize productivity while avoiding unmanageable task volume. Present the plan directly within your chat message.
+1. **Scope the Request:** Decide whether the request belongs to an active mission under `copilot-office/<mission-name>/` or is a side quest.
+   - If it is a side quest, do not read or update mission planning files unless the user explicitly asks.
+   - If it belongs to an active mission, resolve the mission folder using `../instructions/project_context.instructions.md`, using current session history first and a narrow inspection step second, and read only the relevant mission files.
+   - Ask the user with `vscode_askQuestions` only if the mission still cannot be resolved safely.
+
+2. **Interactive Planning:** Use skill 'plan' to generate actionable steps resolving the user's request and present the plan directly within your chat message.
+   - For side quests, the plan should be generated from the user's request and the history of the current session rather than from mission planning files.
    - You MUST use the `vscode_askQuestions` tool to seek the user's explicit confirmation.
    - Do NOT place the plan text inside the tool's question property; output the plan plainly in the main chat.
    - If the user rejects the plan, you MUST restart Step 1 incorporating their feedback.
-   
-2. **Execution Phase:** Once the plan is confirmed, execute it sequentially. Do NOT stop between tasks. Work through the backlog continuously. You may only pause if you encounter a critical blocker or require further clarification.
 
-3. **Status Reporting:** Deploy a subagent (or summarize directly) to generate a detailed report based on the executed plan, identifying what was achieved and what the next steps are.
+3. **Execution Phase**
+You MUST implement the tasks defined in the plan.
+- Use a dedicated subagent for each distinct task (e.g., implementation, research, testing, debugging).
+- Proceed sequentially through the backlog WITHOUT stopping between tasks.
+- Only pause execution if you encounter a critical blocker, require clarification, or hit a defined milestone requiring manual verification.
+
+4. **Status Reporting:** Generate a detailed report identifying what was achieved, what the next steps are, whether mission files were intentionally used or intentionally ignored, and whether the mission came from current session history or the inspection step.
