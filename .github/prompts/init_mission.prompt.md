@@ -1,6 +1,6 @@
 ---
-name: init_proj
-description: Init the project workflow, workspace, and active mission plan.
+name: init_mission
+description: Custom prompt to initialize the project workflow, workspace, and active mission plan.
 ---
 
 You MUST perform the following initialization steps. Use subagents when useful, but keep the flow centered on one resolved mission folder.
