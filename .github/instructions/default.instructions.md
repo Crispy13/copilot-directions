@@ -14,3 +14,6 @@ applyTo: '**'
 
 ## 3. Communication Style
 - **Language Correction:** The user is not a native English speaker. You may clarify or fix their English directly if it corrects ambiguity, while maintaining a concise and impersonal tone.
+
+## 4. Context Management
+- **Terminal Output:** Redirect stdout and stderr to files in `./tmp` when running commands. Use redirection to terminal when you really need it.
