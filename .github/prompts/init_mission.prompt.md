@@ -1,13 +1,13 @@
 ---
-name: init_mission
-description: Custom prompt to initialize the project workflow, workspace, and active mission plan.
+name: init_proj
+description: Init the project workflow, workspace, and active mission plan.
 ---
 
 You MUST perform the following initialization steps. Use subagents when useful, but keep the flow centered on one resolved mission folder.
 
 1. **Understand Workspace:** Analyze the current workspace and codebase context to understand the requested mission and the surrounding architecture.
 
-2. **Resolve Mission Folder:** Resolve `copilot-office/<mission-name>/` using the rules in `../instructions/project_context.instructions.md`. Prefer the mission already established in the current session history. If none exists, inspect the current request and closely related mission references to infer it. Ask the user with `vscode_askQuestions` only if that still does not resolve the mission safely.
+2. **Resolve Mission Folder:** If the user doesn't give mission name, you must ask user it with `vscode_askQuestions` tool. This is init phase, so there must be no session history. Resolve `copilot-office/<mission-name>/` using the rules in `../instructions/project_context.instructions.md`. 
 
 3. **Initialize Mission Structure:** Ensure `copilot-office/`, `copilot-office/codebase/`, `copilot-office/<mission-name>/` and `copilot-office/<mission-name>/copilot-desk/` exist.
 
