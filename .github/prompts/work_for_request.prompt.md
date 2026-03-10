@@ -5,9 +5,9 @@ description: Interactive plan-work-report cycle for handling isolated user reque
 
 You MUST perform the following interactive workflow:
 
-1. **Scope the Request:** Decide whether the request is related to an active mission under `copilot-office/<mission-name>/` or not. The request can have nothing to do with any active mission.
-   - If you can't decide it is related to an active mission or not, you MUST ask the user for clarification using `vscode_askQuestions` instead of making assumptions.
-   - If it is related to an active mission, resolve the mission folder using `../instructions/project_context.instructions.md`, using current session history first and a narrow inspection step second, and read only the relevant mission files.
+1. **Scope the Request:** Decide whether the request is related to an active mission under `copilot-office/<mission-name>/` or unrelated to any active mission. A request may be related to a mission without being part of that mission. In that case, you may refer to mission context, but you are not allowed to modify mission files unless the user explicitly asks.
+   - If you cannot determine whether the request is related to an active mission, you MUST ask the user for clarification using `vscode_askQuestions` instead of making assumptions.
+   - If it is related to an active mission, resolve the mission folder using `../instructions/project_context.instructions.md`, using current session history first and a narrow inspection step second, and read only the relevant mission files for context.
    - If it has nothing to do with any active mission, do not read or update any mission planning files unless the user explicitly asks.
    - Ask the user with `vscode_askQuestions` only if the mission still cannot be resolved safely.
 
