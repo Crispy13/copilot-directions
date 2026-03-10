@@ -5,9 +5,10 @@ description: Interactive plan-work-report cycle for handling isolated user reque
 
 You MUST perform the following interactive workflow:
 
-1. **Scope the Request:** Decide whether the request belongs to an active mission under `copilot-office/<mission-name>/` or is a side quest.
-   - If it is a side quest, do not read or update mission planning files unless the user explicitly asks.
-   - If it belongs to an active mission, resolve the mission folder using `../instructions/project_context.instructions.md`, using current session history first and a narrow inspection step second, and read only the relevant mission files.
+1. **Scope the Request:** Decide whether the request is related to an active mission under `copilot-office/<mission-name>/` or not. The request can have nothing to do with any active mission.
+   - If you can't decide it is related to an active mission or not, you MUST ask the user for clarification using `vscode_askQuestions` instead of making assumptions.
+   - If it is related to an active mission, resolve the mission folder using `../instructions/project_context.instructions.md`, using current session history first and a narrow inspection step second, and read only the relevant mission files.
+   - If it has nothing to do with any active mission, do not read or update any mission planning files unless the user explicitly asks.
    - Ask the user with `vscode_askQuestions` only if the mission still cannot be resolved safely.
 
 2. **Interactive Planning:** Use skill 'plan' to generate actionable steps resolving the user's request and present the plan directly within your chat message.
