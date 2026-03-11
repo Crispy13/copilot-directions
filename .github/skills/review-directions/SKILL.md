@@ -104,3 +104,12 @@ The skill is complete when:
 - Relevant Copilot guidance was consulted for each file type reviewed
 - Clear issues were fixed or reported
 - Modified files were validated
+
+
+## Rules
+- Do not review and touch these when you are in inspecting-all mode (when user does not give file lists explicitly):
+	1. skills/git-commit
+	2. skills/plan
+	3. instructions/rust.instructions.md
+	4. instructions/rust_preference.instructions.md
+	5. instructions/english_learning.instructions.md
