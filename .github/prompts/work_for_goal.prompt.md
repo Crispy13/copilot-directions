@@ -52,14 +52,17 @@ Run a custom agent named exactly 'Plan' as subagent to do the following:
 
 ## 2. Execute The Current Stage
 Run a subagent to execute the plan defined in `copilot-office/<mission-name>/copilot-stage-plan.md`:
-- When delegating to subagents, include the resolved mission name, and the stage plan file and tell them to stay within that mission folder and its related shared docs.
+- When delegating to subagents, include these:
+  1. the resolved mission name
+  2. `../instructions/project_context.instructions.md` (to understand project context)
+  3. the stage plan file (direct order for subagent)
+- Tell them to stay within that mission folder and its related shared docs.
 - Use a dedicated subagent for each distinct multi-step task (e.g., implementation, research, testing, debugging).
 - Only pause execution if you encounter a critical blocker, require clarification, or hit a defined milestone requiring manual verification.
 - Do not silently switch to another mission folder mid-run.
 - The execution subagent owns substantive implementation, research, testing, and debugging work for this stage.
 - The main agent may use direct tool calls only for minimal coordination work, such as checking the updated stage files, reading a concise result, or validating whether another handoff is needed.
 - Do not use the main agent for substantive stage execution when that work belongs to the execution subagent.
-- Give the execution subagent only the minimum task-scoped context it needs: the mission folder, the active goal, the current stage objective, the relevant files or excerpts, task-specific constraints, and the required verification steps.
 - Do not pass unrelated mission files, the full mission history, the entire `copilot-desk/`, or long raw logs unless the current stage truly depends on them.
 - After completing the current stage, reassess the active goal.
 - Update `copilot-office/<mission-name>/copilot-active-plan.md` and `copilot-office/<mission-name>/copilot-stage-plan.md` to reflect the new state before planning the next stage.
