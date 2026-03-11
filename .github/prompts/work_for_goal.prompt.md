@@ -25,25 +25,28 @@ You MUST perform the following workflow:
 3. Otherwise, use the mission goal from `copilot-office/<mission-name>/copilot-project-plan.md` as the active goal.
 - Do not confuse the mission goal with the active goal. The mission goal is the larger objective; the active goal is what you are currently pursuing.
 - If the active goal is vague or cannot be determined safely, ask for clarification using `vscode_askQuestions` instead of making assumptions.
-- If `copilot-office/<mission-name>/copilot-active-plan.md` is missing, stale, or no longer matches the active goal, run a custom agent named exactly 'Plan' as subagent to create or update it using the `## Active Plan Rules` section below.
+- If `copilot-office/<mission-name>/copilot-active-plan.md` is missing, stale, or no longer matches the active goal, run a custom agent named exactly 'Plan' as subagent to produce updated active-plan content using the `## Active Plan Rules` section below, then write that content to `copilot-office/<mission-name>/copilot-active-plan.md` in the main agent.
 - Do not move to step 1 until the active goal is resolved safely and the active plan is usable, or a genuine blocker is reported.
 
 ## 1. Plan The Next Stage
-Run a custom agent named exactly 'Plan' as subagent to update or generate the next stage plan:
-- If the `Plan` subagent is unavailable, stop and report that blocker instead of silently substituting another agent.
-1. Confirm the resolved mission folder and ignore unrelated mission folders unless the user explicitly asks for cross-mission work.
-2. Read the mission context from:
-  - `copilot-office/<mission-name>/copilot-project-plan.md`
-  - `copilot-office/<mission-name>/copilot-active-plan.md`
-  - `copilot-office/<mission-name>/copilot-stage-plan.md`
-  - `copilot-office/<mission-name>/copilot-desk/`
-  - `copilot-office/codebase/CODEBASE.md` when shared architecture matters
-3. Distinguish the mission goal from the active goal.
-4. Break the active goal into stages if necessary, but plan only the next stage to execute now.
-5. Update or generate `copilot-office/<mission-name>/copilot-stage-plan.md` for the next stage to execute now.
-6. Keep `copilot-office/<mission-name>/copilot-stage-plan.md` detailed, concrete, and execution-oriented:
-  - Capture the current stage objective, ordered tasks, dependencies, verification steps, and immediate blockers.
-  - Replace or rewrite this file when the current stage is completed or re-scoped rather than appending a long history.
+1. Run a custom agent named exactly 'Plan' as subagent to update or generate the next stage plan:
+  - If the `Plan` subagent is unavailable, stop and report that blocker instead of silently substituting another agent.
+  1. Confirm the resolved mission folder and ignore unrelated mission folders unless the user explicitly asks for cross-mission work.
+  2. Read the mission context from:
+    - `copilot-office/<mission-name>/copilot-project-plan.md`
+    - `copilot-office/<mission-name>/copilot-active-plan.md`
+    - `copilot-office/<mission-name>/copilot-stage-plan.md`
+    - `copilot-office/<mission-name>/copilot-desk/`
+    - `copilot-office/codebase/CODEBASE.md` when shared architecture matters
+  3. Distinguish the mission goal from the active goal.
+  4. Break the active goal into stages if necessary, but plan only the next stage to execute now.
+  5. Produce the next stage-plan content for `copilot-office/<mission-name>/copilot-stage-plan.md` and return it to the main agent.
+  6. Keep `copilot-office/<mission-name>/copilot-stage-plan.md` detailed, concrete, and execution-oriented:
+    - Capture the current stage objective, ordered tasks, dependencies, verification steps, and immediate blockers.
+    - Replace or rewrite this file when the current stage is completed or re-scoped rather than appending a long history.
+
+2. Update `copilot-office/<mission-name>/copilot-stage-plan.md` in the main agent with the stage-plan content returned by the `Plan` subagent.
+
 
   
 
@@ -63,7 +66,7 @@ Run a subagent to execute the plan defined in `copilot-office/<mission-name>/cop
 - Do not use the main agent for substantive stage execution when that work belongs to the execution subagent.
 - Do not pass unrelated mission files, the full mission history, the entire `copilot-desk/`, or long raw logs unless the current stage truly depends on them.
 - After completing the current stage, reassess the active goal.
-- If the active goal or its working state changed materially, run a custom agent named exactly 'Plan' as subagent to update `copilot-office/<mission-name>/copilot-active-plan.md` using the `## Active Plan Rules` section below.
+- If the active goal or its working state changed materially, run a custom agent named exactly 'Plan' as subagent to produce updated active-plan content using the `## Active Plan Rules` section below, then write that content to `copilot-office/<mission-name>/copilot-active-plan.md` in the main agent.
 - If the active goal is not yet resolved and no genuine blocker exists, return to step 1 with updated state and plan the next stage.
 - Keep iterating stages until the active goal is resolved or blocked.
 
