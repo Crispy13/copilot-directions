@@ -6,7 +6,7 @@ description: Load active mission history, including plans, chat logs, and archit
 You MUST perform the following context-gathering steps.
 
 ## 1. Context Acquisition
-1. Resolve `copilot-office/<mission-name>/` using the rules in `../instructions/project_context.instructions.md`. Prefer the mission already established in the current session history. If none exists, inspect the current request and closely related mission references. Ask only if the mission still cannot be resolved safely.
+1. Ask the current mission name with `vscode_askQuestions` tool if user does not give the mission name explicitly. Then, resolve `copilot-office/<mission-name>/` using the rules in `../instructions/project_context.instructions.md`. 
 2. Read and retrieve context from:
 - `copilot-office/<mission-name>/copilot-project-plan.md`: Digest mission goals.
 - `copilot-office/<mission-name>/copilot-active-plan.md`: Digest the currently active goal, working backlog, blockers, and unresolved decisions.
