@@ -6,7 +6,8 @@ usage() {
 Usage: ./patch_github_directions.sh [-f|--force] [-d|--github-dir DIR]
 
 Overwrite every .md file under the target .github directory, except files inside
-any review-directions folder. A backup archive is created under ./tmp first.
+any review-directions folder. A backup archive is created under the caller's
+./tmp directory first.
 
 Examples:
   ./patch_github_directions.sh
@@ -49,29 +50,14 @@ while [[ "$#" -gt 0 ]]; do
   esac
 done
 
-script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-if repo_root_candidate="$(cd -- "$script_dir" && git rev-parse --show-toplevel 2>/dev/null)"; then
-  repo_root="$repo_root_candidate"
-else
-  repo_root="$script_dir"
-fi
-repo_root="$(realpath "$repo_root")"
+work_root="$(pwd -P)"
 
 if [[ "$github_dir_input" = /* ]]; then
   github_dir_abs="$github_dir_input"
 else
-  github_dir_abs="$repo_root/$github_dir_input"
+  github_dir_abs="$work_root/$github_dir_input"
 fi
 github_dir_abs="$(realpath "$github_dir_abs")"
-
-case "$github_dir_abs" in
-  "$repo_root"|"$repo_root"/*)
-    ;;
-  *)
-    echo "Error: --github-dir must be inside repo root: $repo_root" >&2
-    exit 1
-    ;;
-esac
 
 if [[ ! -d "$github_dir_abs" ]]; then
   echo "Error: target directory does not exist: $github_dir_abs" >&2
@@ -79,7 +65,7 @@ if [[ ! -d "$github_dir_abs" ]]; then
 fi
 
 timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-backup_dir="$repo_root/tmp"
+backup_dir="$work_root/tmp"
 backup_path="$backup_dir/directions-backup-${timestamp}.tar.gz"
 
 files=()
@@ -88,16 +74,16 @@ while IFS= read -r -d '' file_path; do
 done < <(find "$github_dir_abs" -type d -name 'review-directions' -prune -o -type f -name '*.md' -print0 | sort -z)
 
 if [[ "${#files[@]}" -eq 0 ]]; then
-  echo "No markdown files found under ${github_dir_abs#$repo_root/}."
+  echo "No markdown files found under $github_dir_abs."
   exit 0
 fi
 
-echo "Target directory: ${github_dir_abs#$repo_root/}"
+echo "Target directory: $github_dir_abs"
 echo "Files to overwrite: ${#files[@]}"
 
 if [[ "$force" -ne 1 ]]; then
   for file_path in "${files[@]}"; do
-    printf '%s\n' "${file_path#$repo_root/}"
+    printf '%s\n' "$(realpath --relative-to="$work_root" "$file_path")"
   done
   read -r -p "Proceed to overwrite these files? (y/N) " answer
   case "$answer" in
@@ -113,14 +99,14 @@ fi
 mkdir -p "$backup_dir"
 relative_paths=()
 for file_path in "${files[@]}"; do
-  relative_paths+=("${file_path#$repo_root/}")
+  relative_paths+=("$(realpath --relative-to="$work_root" "$file_path")")
 done
 
-tar -czf "$backup_path" -C "$repo_root" "${relative_paths[@]}"
-backup_rel="${backup_path#$repo_root/}"
+tar -czf "$backup_path" -C "$work_root" "${relative_paths[@]}"
+backup_rel="$(realpath --relative-to="$work_root" "$backup_path")"
 
 for file_path in "${files[@]}"; do
-  relative_path="${file_path#$repo_root/}"
+  relative_path="$(realpath --relative-to="$work_root" "$file_path")"
   cat > "$file_path" <<EOF
 ---
 updated: $timestamp
