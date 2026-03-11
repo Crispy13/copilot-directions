@@ -5,9 +5,10 @@ usage() {
   cat <<'USAGE'
 Usage: ./patch_github_directions.sh [-f|--force] [-d|--github-dir DIR]
 
-Copy markdown direction files from this repository's .github into matching files
-inside the target .github directory. Files inside any review-directions folder
-are excluded. Target files with no matching source stay unchanged.
+Copy markdown direction files from this repository's .github into the target
+.github directory. Files inside any review-directions folder are excluded.
+Matching target files are overwritten, and missing target files are created.
+Target files with no matching source stay unchanged.
 
 A backup archive of overwritten target files is created under the caller's ./tmp
 directory first.
@@ -99,7 +100,7 @@ fi
 
 source_matches=()
 target_matches=()
-missing_targets=()
+new_targets=()
 
 for source_file in "${source_files[@]}"; do
   relative_path="$(realpath --relative-to="$source_github_dir" "$source_file")"
@@ -108,29 +109,35 @@ for source_file in "${source_files[@]}"; do
     source_matches+=("$source_file")
     target_matches+=("$target_file")
   else
-    missing_targets+=("$relative_path")
+    source_matches+=("$source_file")
+    target_matches+=("$target_file")
+    new_targets+=("$target_file")
   fi
 done
 
 if [[ "${#target_matches[@]}" -eq 0 ]]; then
-  echo "No matching target markdown files found under $github_dir_abs."
+  echo "No source markdown files are available to sync into $github_dir_abs."
   exit 0
 fi
 
 files_to_update=()
 source_to_update=()
+existing_files_to_backup=()
 for index in "${!target_matches[@]}"; do
-  if ! cmp -s "${source_matches[$index]}" "${target_matches[$index]}"; then
+  if [[ ! -f "${target_matches[$index]}" ]] || ! cmp -s "${source_matches[$index]}" "${target_matches[$index]}"; then
     source_to_update+=("${source_matches[$index]}")
     files_to_update+=("${target_matches[$index]}")
+    if [[ -f "${target_matches[$index]}" ]]; then
+      existing_files_to_backup+=("${target_matches[$index]}")
+    fi
   fi
 done
 
 echo "Source directory: $source_github_dir"
 echo "Target directory: $github_dir_abs"
-echo "Matching target files: ${#target_matches[@]}"
+echo "Source files considered: ${#target_matches[@]}"
 echo "Files that need updates: ${#files_to_update[@]}"
-echo "Missing target counterparts skipped: ${#missing_targets[@]}"
+echo "New target files to create: ${#new_targets[@]}"
 
 if [[ "${#files_to_update[@]}" -eq 0 ]]; then
   echo "All matching target files are already up to date."
@@ -154,15 +161,23 @@ fi
 
 mkdir -p "$backup_dir"
 relative_paths=()
-for file_path in "${files_to_update[@]}"; do
+for file_path in "${existing_files_to_backup[@]}"; do
   relative_paths+=("$(realpath --relative-to="$work_root" "$file_path")")
 done
 
-tar -czf "$backup_path" -C "$work_root" "${relative_paths[@]}"
-backup_rel="$(realpath --relative-to="$work_root" "$backup_path")"
+backup_rel=""
+if [[ "${#relative_paths[@]}" -gt 0 ]]; then
+  tar -czf "$backup_path" -C "$work_root" "${relative_paths[@]}"
+  backup_rel="$(realpath --relative-to="$work_root" "$backup_path")"
+fi
 
 for index in "${!files_to_update[@]}"; do
+  mkdir -p "$(dirname -- "${files_to_update[$index]}")"
   cp "${source_to_update[$index]}" "${files_to_update[$index]}"
 done
 
-echo "Done. Updated ${#files_to_update[@]} files from source .github. Backup: $backup_rel"
+if [[ -n "$backup_rel" ]]; then
+  echo "Done. Synced ${#files_to_update[@]} files from source .github. Backup: $backup_rel"
+else
+  echo "Done. Synced ${#files_to_update[@]} files from source .github. No existing files required backup."
+fi
