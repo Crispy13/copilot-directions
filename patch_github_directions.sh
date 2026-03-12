@@ -6,7 +6,8 @@ usage() {
 Usage: ./patch_github_directions.sh [-f|--force] [-d|--github-dir DIR]
 
 Copy markdown direction files from this repository's .github into the target
-.github directory. Files inside any review-directions folder are excluded.
+.github directory. Files inside any review-directions folder and
+copilot-instructions.md are excluded.
 Matching target files are overwritten, and missing target files are created.
 Target files with no matching source stay unchanged.
 
@@ -91,7 +92,9 @@ backup_path="$backup_dir/directions-backup-${timestamp}.tar.gz"
 source_files=()
 while IFS= read -r -d '' file_path; do
   source_files+=("$file_path")
-done < <(find "$source_github_dir" -type d -name 'review-directions' -prune -o -type f -name '*.md' -print0 | sort -z)
+done < <(find "$source_github_dir" \
+  -type d -name 'review-directions' -prune -o \
+  -type f -name '*.md' ! -name 'copilot-instructions.md' -print0 | sort -z)
 
 if [[ "${#source_files[@]}" -eq 0 ]]; then
   echo "No source markdown files found under $source_github_dir."
