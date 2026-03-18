@@ -1,11 +1,15 @@
 ---
 name: work_for_request
-description: Interactive plan-work-report cycle for handling isolated user requests or side quests.
+description: "Handle a one-off user request or side quest with planning, confirmation, and execution, while using mission_folder only when relevant."
+argument-hint: "User request or side quest"
 ---
+
+## Definitions
+- `<mission-folder>`: the resolved mission path placeholder. Set it to `copilot-office/missions/<mission-name>` only when the request is mission-related.
 
 You MUST perform the following interactive workflow:
 
-1. **Scope the Request:** Decide whether the request is related to an active mission under `copilot-office/<mission-name>/` or unrelated to any active mission. A request may be related to a mission without being part of that mission. In that case, you may refer to mission context, but you are not allowed to modify mission files unless the user explicitly asks.
+1. **Scope the Request:** Decide whether the request is related to an active mission under `<mission-folder>` or unrelated to any active mission. A request may be related to a mission without being part of that mission. In that case, you may refer to mission context, but you are not allowed to modify mission files unless the user explicitly asks.
    - If you cannot determine whether the request is related to an active mission, you MUST ask the user for clarification using `vscode_askQuestions` instead of making assumptions.
    - If it is related to an active mission, resolve the mission folder using `../instructions/project_context.instructions.md`, using current session history first and a narrow inspection step second, and read only the relevant mission files for context.
    - If it has nothing to do with any active mission, do not read or update any mission planning files unless the user explicitly asks.
