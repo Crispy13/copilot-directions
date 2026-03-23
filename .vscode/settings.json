@@ -4,5 +4,7 @@
     "chat.tools.terminal.blockDetectedFileWrites": "never",
     "github.copilot.chat.organizationCustomAgents.enabled": false,
     "github.copilot.chat.organizationInstructions.enabled": false,
-    "chat.customAgentInSubagent.enabled": true
+    "chat.customAgentInSubagent.enabled": true,
+    "github.copilot.chat.agentDebugLog.enabled": true,
+    "github.copilot.chat.agentDebugLog.fileLogging.enabled": true
 }
