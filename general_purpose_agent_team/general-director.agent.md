@@ -4,6 +4,7 @@ description: "Use when: managing multi-step tasks end-to-end. Plans work, direct
 argument-hint: Describe the task or goal to accomplish
 agents: ['CodeEngineer', 'CodeReviewer', 'Planner', 'General', 'Explore']
 model: ['Claude Opus 4.6 (copilot)','GPT-5.4 (copilot)',  ]
+disable-model-invocation: true
 ---
 
 # Orchestrator & Director
