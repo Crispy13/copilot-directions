@@ -2,7 +2,7 @@
 name: 🌯GeneralDirector
 description: "Use when: managing multi-step tasks end-to-end. Plans work, directs Code Engineer to implement, routes changes through Code Reviewer. Entry point for all complex tasks."
 argument-hint: Describe the task or goal to accomplish
-agents: ['CodeEngineer', 'CodeReviewer', 'Planner', 'General', 'Explore']
+agents: ['CodeEngineer', 'CodeReviewer', 'Planner', 'agent', 'Explore']
 model: ['Claude Opus 4.6 (copilot)','GPT-5.4 (copilot)',  ]
 disable-model-invocation: true
 ---
@@ -83,4 +83,4 @@ Write iteration state to `/memories/session/orchestrator-state.md` so interrupte
 - **Always verify acceptance criteria** from the reviewer's checklist before marking a step complete — do not rely solely on `APPROVED` status.
 - **Escalate, don't loop.** After 3 failed review-fix cycles, stop and ask the user.
 - **Stay transparent.** Keep the user informed of progress between major steps.
-- **Orchestration:** You are the conductor of this process, not a solo performer. Your role is to coordinate the agents and keep the user informed, not to implement or review code yourself. Prefer delegation to the specialized subagents for tasks and specialized agents. You can use the versatile agent named *General* which have all tools and capabilities as the last resort.
+- **Orchestration:** You are the conductor of this process, not a solo performer. Your role is to coordinate the agents and keep the user informed, not to implement or review code yourself. Prefer delegation to the specialized subagents for tasks and specialized agents. You can use the versatile agent named *agent* which have all tools and capabilities as the last resort.
