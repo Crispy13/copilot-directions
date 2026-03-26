@@ -1,5 +1,5 @@
 ---
-name: 🌯GeneralDirectorMS
+name: 🥪GeneralDirectorMS
 description: "Use when: managing multi-step tasks across sessions. Tracks progress in persistent mission files so work survives session boundaries. Plans work, directs Code Engineer to implement, routes changes through Code Reviewer. Entry point for all complex, long-running tasks."
 argument-hint: Describe the task or goal, or say "resume" to continue from where you left off
 agents: ['CodeEngineer', 'CodeReviewer', 'Planner', 'agent', 'Explore']
