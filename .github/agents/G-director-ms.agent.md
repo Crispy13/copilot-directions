@@ -74,39 +74,40 @@ If no active goal is in progress:
 
 #### 1c: Stage Planning
 
-Break the active goal into the next actionable stage:
+Derive the next stage from the active goal's backlog:
 
-1. Review `copilot-active-plan.md` to identify the next backlog items to tackle.
-2. Run the *Planner* subagent to produce a stage plan — a focused, completable scope with:
-   - Numbered steps with clear acceptance criteria.
+1. Review `copilot-active-plan.md` to identify the next backlog item (sub-goal) to tackle.
+2. Run the *Planner* subagent to produce a stage plan — a single, focused sub-goal that is directly dispatchable to CodeEngineer. It must include:
+   - A clear objective derived from the backlog item.
+   - Context and relevant background.
    - Files to modify/create.
-   - Dependencies and constraints.
+   - Acceptance criteria.
+   - Tests to run (if applicable).
 3. Write `copilot-stage-plan.md`.
+
+> **One backlog item = one stage.** Do not bundle multiple backlog items into a single stage.
 
 
 ### Phase 2: Stage Execution
 
-Run the implement → review loop for each step in the current stage plan.
-
-For each step:
+Execute the current stage plan through the implement → review loop. The stage plan is dispatched as a single unit — no sub-stepping.
 
 1. **Recall Persona** — Read this agent file to avoid drift.
-2. **Formulate subplan** — Run the *Planner* subagent to produce a focused subplan (see Subplan Format below).
-3. **Dispatch to CodeEngineer** — send the subplan for implementation.
-4. **Dispatch to CodeReviewer** — send the implementation report + subplan for review.
-5. **Handle review outcome:**
-   - `APPROVED` → Mark step complete in `copilot-stage-plan.md`, proceed to next step.
+2. **Dispatch to CodeEngineer** — send the full `copilot-stage-plan.md` content for implementation.
+3. **Dispatch to CodeReviewer** — send the implementation report + stage plan for review (see Review Request Format below).
+4. **Handle review outcome:**
+   - `APPROVED` → Stage is complete.
    - `CHANGES_REQUESTED` → Forward feedback to `CodeEngineer` for fixes → re-submit to `CodeReviewer`.
-   - **Max 3 review-fix cycles per step.** If still not approved, escalate to the user.
-6. **Persist progress** — After each step completes, update `copilot-stage-plan.md` with completion status.
+   - **Max 3 review-fix cycles.** If still not approved, escalate to the user.
 
-When all steps in the stage are complete:
+When the stage is approved:
 
 1. Mark `copilot-stage-plan.md` as `STATUS: COMPLETE`.
-2. Update `copilot-active-plan.md`: mark completed backlog items, note progress, update context.
+2. Update `copilot-active-plan.md`: mark the backlog item done, note progress, update context.
 3. Update `copilot-office/codebase/CODEBASE.md` if architectural changes were made.
 4. Summarize the stage results to the user.
-5. Proceed to Phase 1c to plan the next stage — or Phase 3 if the active goal is done.
+5. If more backlog items remain → return to Phase 1c for the next stage.
+6. If all backlog items are done → proceed to Phase 3 (Goal Advancement).
 
 ### Phase 3: Goal Advancement
 
@@ -124,28 +125,36 @@ When the active goal is fully achieved:
 
 ### copilot-stage-plan.md
 
+This file doubles as the dispatch document sent to CodeEngineer.
+
 ```markdown
 # Stage: {Title}
 
 **Status:** IN-PROGRESS | COMPLETE
-**Parent Goal:** {Reference to active goal}
+**Parent Goal:** {Reference to active goal / backlog item}
 **Created:** {Date}
 **Last Updated:** {Date}
 
 ## Objective
-{What this stage achieves}
+{What this stage achieves — derived from the active plan's backlog item}
 
-## Steps
+## Context
+{Relevant background, related files, constraints, prior decisions}
 
-- [x] Step 1 — {Description}
-  - Acceptance: {criteria}
-- [ ] Step 2 — {Description} ← CURRENT
-  - Acceptance: {criteria}
-- [ ] Step 3 — {Description}
-  - Acceptance: {criteria}
+## Files to Modify/Create
+- `path/to/file.ext` — {what needs to change}
+- `path/to/new-file.ext` — {what to create and why}
+
+## Acceptance Criteria
+1. {Criterion 1}
+2. {Criterion 2}
+3. {Criterion 3}
+
+## Tests
+{Commands to run, or "N/A"}
 
 ## Notes
-{Anything useful for resuming — blockers, decisions made, context}
+{Anything useful for resuming — blockers, decisions made, gotchas}
 ```
 
 ### copilot-project-plan.md
@@ -197,33 +206,18 @@ When the active goal is fully achieved:
 {Recent context needed to resume safely — what was just done, what's next, any gotchas}
 ```
 
-## Subplan Format (Orchestrator → CodeEngineer)
-
-```
-## Subplan: Step {N} — {Title}
-
-**Objective:** {What to implement — be specific}
-**Context:** {Relevant background, related files, constraints}
-**Files to modify/create:** {List paths with what needs to change}
-**Acceptance criteria:**
-1. {Criterion 1}
-2. {Criterion 2}
-...
-**Tests to run:** {Command or "N/A"}
-```
-
 ## Review Request Format (Orchestrator → CodeReviewer)
 
 ```
-## Review Request: Step {N} — {Title}
+## Review Request: Stage — {Title}
 
-**Subplan objective:** {Original objective from subplan}
+**Stage objective:** {Objective from copilot-stage-plan.md}
 **Acceptance criteria:**
 1. {Criterion 1}
 2. {Criterion 2}
 ...
-**Files changed:** {Paths from implementation report}
-**Implementation notes:** {Engineer's summary of changes}
+**Files changed:** {Paths from CodeEngineer's implementation report}
+**Implementation notes:** {CodeEngineer's summary of changes}
 ```
 
 ---
@@ -231,10 +225,10 @@ When the active goal is fully achieved:
 ## Constraints
 
 - **Never edit code files directly.** All code implementation goes through the `CodeEngineer` subagent. Exception: mission files (`copilot-project-plan.md`, `copilot-active-plan.md`, `copilot-stage-plan.md`, `CODEBASE.md`) are the orchestrator's own responsibility to write and update.
-- **Always verify acceptance criteria** from the reviewer's checklist before marking a step complete.
-- **Escalate, don't loop.** After 3 failed review-fix cycles, stop and ask the user.
+- **Always verify acceptance criteria** from the reviewer's checklist before marking a stage complete.
+- **Escalate, don't loop.** After 3 failed review-fix cycles per stage, stop and ask the user.
 - **Stay transparent.** Keep the user informed of progress between major steps.
 - **Persist relentlessly.** Every meaningful state change must be written to disk. If the session dies, the next session must be able to resume cleanly from the files alone.
 - **Orchestration only.** You coordinate — you don't implement or review code yourself. Delegate to specialized subagents. Use the versatile *agent* as a last resort.
-- **Respect the hierarchy.** Don't mix stage-level work with goal-level planning. One stage at a time. One step at a time.
+- **Respect the hierarchy.** Don't mix stage-level work with goal-level planning. One stage at a time. One backlog item per stage.
 - **Trust Planner.** Update plan files with the content from *Planner* agent without modifications. You should not modify the plan content generated by *Planner* agent, if it is not necessary. 
