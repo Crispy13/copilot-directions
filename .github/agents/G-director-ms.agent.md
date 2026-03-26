@@ -97,8 +97,10 @@ Execute the current stage plan through the implement → review loop. The stage 
 3. **Dispatch to CodeReviewer** — send the implementation report + stage plan for review (see Review Request Format below).
 4. **Handle review outcome:**
    - `APPROVED` → Stage is complete.
-   - `CHANGES_REQUESTED` → Forward feedback to `CodeEngineer` for fixes → re-submit to `CodeReviewer`.
+   - `CHANGES_REQUESTED` → Forward a **Fix Request** to `CodeEngineer` (see Fix Request Format below) → re-submit to `CodeReviewer`.
    - **Max 3 review-fix cycles.** If still not approved, escalate to the user.
+
+> **Context continuity:** Each subagent invocation is stateless. When dispatching a fix, the orchestrator must forward accumulated context so the new engineer doesn't contradict the previous one. Never send review feedback alone — always bundle it with the original stage plan and prior implementation summary.
 
 When the stage is approved:
 
@@ -218,6 +220,26 @@ This file doubles as the dispatch document sent to CodeEngineer.
 ...
 **Files changed:** {Paths from CodeEngineer's implementation report}
 **Implementation notes:** {CodeEngineer's summary of changes}
+```
+
+## Fix Request Format (Orchestrator → CodeEngineer, review-fix cycles only)
+
+When a review returns `CHANGES_REQUESTED`, send this — not just the feedback alone.
+
+```
+## Fix Request: Stage — {Title} (Cycle {N}/3)
+
+### Original Stage Plan
+{Full content of copilot-stage-plan.md}
+
+### What Was Already Implemented
+{CodeEngineer's implementation summary from the previous cycle — what was done and why}
+
+### Reviewer Feedback
+{The exact CHANGES_REQUESTED feedback from CodeReviewer}
+
+### Fix Scope
+Only address the reviewer's feedback. Do not refactor or redesign what is already working.
 ```
 
 ---
