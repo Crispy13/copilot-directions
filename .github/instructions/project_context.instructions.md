@@ -5,7 +5,7 @@ description: Define locations and rules for project context, planning, and docum
 
 # Project Context Reference
 
-You must utilize the following files and directories to maintain project alignment and track progress. Resolve the active mission folder before making changes, and update relevant context files when milestones are reached.
+The following files and directories provide project alignment and progress tracking. Resolve the active mission folder before making changes, and update relevant context files when milestones are reached. It is recommended to read these context files if you don't have context information.
 
 ## Definitions
 
@@ -21,25 +21,22 @@ You must utilize the following files and directories to maintain project alignme
 - **Agent Rule:** Ignore unrelated mission folders unless the user explicitly asks for cross-mission work.
 
 ## 1. Project Goal (`<mission-folder>/copilot-project-plan.md`)
-- **Purpose:** Defines the high-level objective and long-term plan for the active mission.
-- **Agent Rule:** Read this first to understand the active mission. Propose updates only when the mission direction or scope changes.
+- **Purpose:** Contains the high-level objective and long-term plan for the active mission.
+- **Agent Rule:** Propose updates only when the mission direction or scope changes.
 - **Agent Rule:** If mission-specific files conflict with generic notes, follow the mission-specific files and surface the conflict.
 
 ## 2. Active Plan (`<mission-folder>/copilot-active-plan.md`)
-- **Purpose:** Tracks the currently active goal for the mission, including the working backlog, blockers, unresolved decisions, and enough recent context to resume safely.
-- **Agent Rule:** Read this to understand what goal is currently active and what still needs to be achieved.
+- **Purpose:** Contains the currently active goal, working backlog, blockers, unresolved decisions, and enough recent context to resume safely.
 - **Agent Rule:** Update this file when the active goal changes materially or when meaningful progress changes the working state.
 - **Agent Rule:** Keep this file operational and current. Compress stale history and move durable design notes into the mission desk rather than turning the active plan into an archive.
 
 ## 3. Stage Plan (`<mission-folder>/copilot-stage-plan.md`)
-- **Purpose:** Defines the next actionable stage to execute for the active goal.
-- **Agent Rule:** Read this file to know what to execute now.
+- **Purpose:** Contains the next actionable stage to execute for the active goal.
 - **Agent Rule:** Regenerate or rewrite this file when a stage is completed, replaced, or re-scoped.
 - **Agent Rule:** Keep this file short, execution-oriented, and specific enough to drive immediate work.
 
 ## 4. Codebase Overview (`copilot-office/codebase/CODEBASE.md`)
-- **Purpose:** Explains shared architectural decisions, main components, and project structure across the workspace.
-- **Agent Rule:** Use this file to understand shared architecture and conventions.
+- **Purpose:** Contains shared architectural decisions, main components, and project structure across the workspace.
 - **Agent Rule:** Do not let this global file override mission-specific requirements in the active mission folder.
 - **Agent Rule:** Keep this file limited to workspace-wide architecture, common modules, shared infrastructure, and conventions reused by multiple missions.
 - **Agent Rule:** Do not store mission-specific backlog, acceptance criteria, temporary status, or mission-only decisions here. Those belong in the active mission folder.
