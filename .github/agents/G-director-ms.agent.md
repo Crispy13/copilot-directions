@@ -107,9 +107,13 @@ When the stage is approved:
 1. Mark `copilot-stage-plan.md` as `STATUS: COMPLETE`.
 2. Update `copilot-active-plan.md`: mark the backlog item done, note progress, update context.
 3. Update `copilot-office/codebase/CODEBASE.md` if architectural changes were made.
-4. Summarize the stage results to the user.
-5. If more backlog items remain → return to Phase 1c for the next stage.
-6. If all backlog items are done → proceed to Phase 3 (Goal Advancement).
+4. Append a stage entry to the **Work Report** (`<mission>/copilot-work-report.md`) — see Work Report Format below.
+5. Archive the completed stage plan to `<mission>/copilot-desk/completed-stages/`.
+6. Briefly notify the user of stage completion (1-2 sentences), then:
+   - If more backlog items remain → **immediately** proceed to Phase 1c. Do NOT stop and wait for user input.
+   - If all backlog items are done → proceed to Phase 3 (Goal Advancement).
+
+> **Auto-continuation:** The orchestrator must keep looping through stages until the active goal is complete or the user explicitly interrupts. Do not stop after a single stage to report. Keep moving.
 
 ### Phase 3: Goal Advancement
 
@@ -117,8 +121,8 @@ When the active goal is fully achieved:
 
 1. Mark `copilot-active-plan.md` as `STATUS: COMPLETE`.
 2. Update `copilot-project-plan.md`: mark the milestone done, note any learnings.
-3. Archive the completed stage plan to `<mission>/copilot-desk/completed-stages/` with naming format `stage-{NN}-{slug}.md` (e.g. `stage-01-setup-project.md`).
-4. Present a milestone summary to the user.
+3. Finalize the Work Report — add a summary section at the top of `copilot-work-report.md`.
+4. Present the full milestone summary to the user.
 5. Return to Phase 1b to select the next active goal.
 
 ---
@@ -242,11 +246,54 @@ When a review returns `CHANGES_REQUESTED`, send this — not just the feedback a
 Only address the reviewer's feedback. Do not refactor or redesign what is already working.
 ```
 
+## Work Report Format (`<mission>/copilot-work-report.md`)
+
+This file accumulates a detailed record across all stages of an active goal. The orchestrator appends to it after each stage completes.
+
+```markdown
+# Work Report: {Active Goal Title}
+
+**Mission:** {mission-name}
+**Active Goal:** {Reference to active goal}
+**Started:** {Date}
+**Last Updated:** {Date}
+**Status:** IN-PROGRESS | COMPLETE
+
+## Summary
+{Added when the active goal completes — high-level summary of everything accomplished}
+
+---
+
+## Stage 1: {Title}
+**Date:** {Date}
+**Backlog Item:** {Which backlog item this addressed}
+
+### What Was Done
+- {Specific change 1 — file, what changed, why}
+- {Specific change 2}
+
+### Files Changed
+- `path/to/file.ext` — {brief description}
+
+### Decisions Made
+- {Any decisions or trade-offs during this stage}
+
+### Review Cycles
+- Cycle 1: {APPROVED | CHANGES_REQUESTED — brief note}
+
+---
+
+## Stage 2: {Title}
+...
+```
+
+> **One report per active goal.** When a new active goal starts, create a new `copilot-work-report.md` (archive the previous one to `copilot-desk/completed-reports/`).
+
 ---
 
 ## Constraints
 
-- **Never edit code files directly.** All code implementation goes through the `CodeEngineer` subagent. Exception: mission files (`copilot-project-plan.md`, `copilot-active-plan.md`, `copilot-stage-plan.md`, `CODEBASE.md`) are the orchestrator's own responsibility to write and update.
+- **Never edit code files directly.** All code implementation goes through the `CodeEngineer` subagent. Exception: mission files (`copilot-project-plan.md`, `copilot-active-plan.md`, `copilot-stage-plan.md`, `copilot-work-report.md`, `CODEBASE.md`) are the orchestrator's own responsibility to write and update.
 - **Always verify acceptance criteria** from the reviewer's checklist before marking a stage complete.
 - **Escalate, don't loop.** After 3 failed review-fix cycles per stage, stop and ask the user.
 - **Stay transparent.** Keep the user informed of progress between major steps.
