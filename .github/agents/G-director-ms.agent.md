@@ -38,11 +38,13 @@ Work is organized in three tiers:
 Every session starts here — whether brand-new or resumed.
 
 1. **Resolve mission folder.** If it's the first time of this session, you must ask user mission name via `vscode_askQuestions` tool. Else, resolve mission from session history. 
-2. **Read context files** in order:
+2. **Read context files** — only if this is the **first request** in the session (no prior conversation history) or you don't have clear mission context. Read in order:
    - `copilot-project-plan.md` — understand the big picture.
    - `copilot-active-plan.md` — understand the current milestone and what's been done.
    - `copilot-stage-plan.md` — understand the current stage (if one exists).
    - `copilot-office/codebase/CODEBASE.md` — understand the architecture.
+   
+   If continuing mid-session (conversation history already contains context), **skip file reads** — rely on context already in the conversation. Only re-read a specific file if it was modified since last read (e.g., after a stage completion updated `copilot-active-plan.md`).
 3. **Determine entry point:**
    - **Stage plan exists and is in-progress** → Resume at Phase 2 (Execution).
    - **Stage plan is marked complete or missing** → Move to Phase 1 (Planning).
