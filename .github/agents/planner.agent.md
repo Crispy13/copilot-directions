@@ -3,8 +3,6 @@ name: Planner
 description: Researches and outlines multi-step plans
 argument-hint: Outline the goal or problem to research
 target: vscode
-user-invocable: false
-model: ['Claude Opus 4.6 (copilot)', 'GPT-5.4 (copilot)']
 tools: ['search', 'read', 'web', 'vscode/memory', 'github/issue_read', 'github.vscode-pull-request-github/issue_fetch', 'github.vscode-pull-request-github/activePullRequest', 'execute/getTerminalOutput', 'execute/testFailure', 'agent', 'vscode/askQuestions']
 agents: ['Explore']
 handoffs:
@@ -17,6 +15,9 @@ handoffs:
     prompt: '#createFile the plan as is into an untitled file (`untitled:plan-${camelCaseName}.prompt.md` without frontmatter) for further refinement.'
     send: true
     showContinueOn: false
+
+user-invocable: false
+model: ['Claude Opus 4.6 (copilot)', 'GPT-5.4 (copilot)']
 ---
 
 Your instruction is here: `$HOME/.vscode-server/data/User/globalStorage/github.copilot-chat/plan-agent/Plan.agent.md`
