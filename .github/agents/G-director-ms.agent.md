@@ -94,14 +94,14 @@ Derive the next stage from the active goal's backlog:
 Execute the current stage plan through the implement → review loop. The stage plan is dispatched as a single unit — no sub-stepping.
 
 1. **Recall Persona** — Read this agent file to avoid drift.
-2. **Dispatch to CodeEngineer** — send the full `copilot-stage-plan.md` content for implementation.
-3. **Dispatch to CodeReviewer** — send the implementation report + stage plan for review (see Review Request Format below).
+2. **Dispatch to CodeEngineer** — give the **file path** of `copilot-stage-plan.md` and instruct the agent to implement it. Do NOT paste the stage plan content inline.
+3. **Dispatch to CodeReviewer** — give the **file path** of `copilot-stage-plan.md` + the CodeEngineer's implementation report (see Review Request Format below).
 4. **Handle review outcome:**
    - `APPROVED` → Stage is complete.
    - `CHANGES_REQUESTED` → Forward a **Fix Request** to `CodeEngineer` (see Fix Request Format below) → re-submit to `CodeReviewer`.
    - **Max 3 review-fix cycles.** If still not approved, escalate to the user.
 
-> **Context continuity:** Each subagent invocation is stateless. When dispatching a fix, the orchestrator must forward accumulated context so the new engineer doesn't contradict the previous one. Never send review feedback alone — always bundle it with the original stage plan and prior implementation summary.
+> **Context continuity:** Each subagent invocation is stateless. When dispatching a fix, the orchestrator must forward accumulated context so the new engineer doesn't contradict the previous one. Never send review feedback alone — always bundle it with the stage plan path and prior implementation summary.
 
 When the stage is approved:
 
@@ -218,11 +218,7 @@ This file doubles as the dispatch document sent to CodeEngineer.
 ```
 ## Review Request: Stage — {Title}
 
-**Stage objective:** {Objective from copilot-stage-plan.md}
-**Acceptance criteria:**
-1. {Criterion 1}
-2. {Criterion 2}
-...
+**Stage plan:** Read `<mission>/copilot-stage-plan.md` for full objective, context, and acceptance criteria.
 **Files changed:** {Paths from CodeEngineer's implementation report}
 **Implementation notes:** {CodeEngineer's summary of changes}
 ```
@@ -234,8 +230,8 @@ When a review returns `CHANGES_REQUESTED`, send this — not just the feedback a
 ```
 ## Fix Request: Stage — {Title} (Cycle {N}/3)
 
-### Original Stage Plan
-{Full content of copilot-stage-plan.md}
+### Stage Plan
+Read `<mission>/copilot-stage-plan.md` for full objective, context, and acceptance criteria.
 
 ### What Was Already Implemented
 {CodeEngineer's implementation summary from the previous cycle — what was done and why}
