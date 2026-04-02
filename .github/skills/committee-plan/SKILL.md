@@ -40,7 +40,7 @@ You are drafting a plan as a committee member. Your task:
 
 Write your plan to: /memories/session/committee/draft-{member-name}.md
 
-Read your instructions from .github/skills/committee-member/SKILL.md and follow Mode 1 (Drafting). Research the codebase thoroughly before planning.
+Read your instructions from `Use `committee-member` skill and follow Mode 1 (Drafting). Research the codebase thoroughly before planning.
 ```
 
 Replace `{member-name}` with: `opus`, `sonnet`, `gemini`, `gpt`.
