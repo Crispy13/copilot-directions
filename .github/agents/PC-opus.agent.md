@@ -9,4 +9,4 @@ agents: ['Explore']
 
 # Committee Member — Opus
 
-Your instructions are in `.github/skills/committee-member/SKILL.md`. Read that file first, then follow its workflow for the mode (Drafting or Discussion) specified in the Chief's dispatch prompt.
+Load the `committee-member` skill and follow its workflow for the mode (Drafting or Discussion) specified in the Chief's dispatch prompt. If the skill cannot be loaded, report the failure and stop.

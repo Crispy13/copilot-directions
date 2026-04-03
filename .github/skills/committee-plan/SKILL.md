@@ -40,7 +40,7 @@ You are drafting a plan as a committee member. Your task:
 
 Write your plan to: /memories/session/committee/draft-{member-name}.md
 
-Read your instructions from .github/skills/committee-member/SKILL.md and follow Mode 1 (Drafting). Research the codebase thoroughly before drafting.
+Load the `committee-member` skill and follow Mode 1 (Drafting). If the skill cannot be loaded, report the failure and stop. Research the codebase thoroughly before drafting.
 
 Use this output format for your draft:
 
@@ -97,7 +97,7 @@ You are participating in discussion round {N} of the committee plan.
 
 Read the consolidated plan: /memories/session/committee/consolidated-plan.md
 
-Read your instructions from .github/skills/committee-member/SKILL.md and follow Mode 2 (Discussion). Respond to ONLY the contested points and unique contributions.
+Load the `committee-member` skill and follow Mode 2 (Discussion). If the skill cannot be loaded, report the failure and stop. Respond to ONLY the contested points and unique contributions.
 
 Write your response to: /memories/session/committee/round-{N}-{member-name}.md
 ```
