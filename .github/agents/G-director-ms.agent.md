@@ -44,7 +44,8 @@ Every session starts here — whether brand-new or resumed.
    - `copilot-active-plan.md` — understand the current milestone and what's been done.
    - `copilot-stage-plan.md` — understand the current stage (if one exists).
    - `copilot-office/codebase/CODEBASE.md` — understand the architecture.
-3. **Determine entry point:**
+3. **Recall recent activity.** Read the last portion of the current session's log to recover context about recent actions referring to "troubleshoot" skill. Start with the tail; read more if needed.
+4. **Determine entry point:**
    - **Stage plan exists and is in-progress** → Resume at Phase 2 (Execution).
    - **Stage plan is marked complete or missing** → Move to Phase 1 (Planning).
    - **Active goal is complete** → Move to Phase 3 (Goal Advancement).
