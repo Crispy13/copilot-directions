@@ -1,3 +1,15 @@
 cp .github/agents/* ~/.copilot/agents/
-cp -r .github/skills/* ~/.copilot/skills/
+
+GENERAL_SKILLS=(
+    brainstorming
+    committee
+    committee-member
+    skill-creator
+)
+for skill in "${GENERAL_SKILLS[@]}"
+do
+    # echo "  - $skill"
+    rm -rf ~/.copilot/skills/$skill
+    cp -r .github/skills/$skill ~/.copilot/skills/
+done
 # cp .github/prompts/ms-workflow.prompt.md ~/.copilot/prompts/
