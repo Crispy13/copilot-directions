@@ -1,0 +1,9 @@
+[submodule "obra-superpowers"]
+	path = obra-superpowers
+	url = https://github.com/obra/superpowers
+[submodule "vercel-labs-skills"]
+	path = vercel-labs-skills
+	url = https://github.com/vercel-labs/skills
+[submodule "anthropics-skills"]
+	path = anthropics-skills
+	url = git@github.com:anthropics/skills.git

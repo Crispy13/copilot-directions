@@ -1,6 +1,6 @@
 ---
 description: Default behavior rules and constraints for this workspace.
-applyTo: '**'
+# applyTo: '**'
 ---
 
 ## 1. Environment and Tools
