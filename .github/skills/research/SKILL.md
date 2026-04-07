@@ -45,6 +45,10 @@ See [report formats](./references/report-formats.md) for the template for each q
 
 ## Investigation Process
 
+### 0. Confirm Intent
+
+Before spending tokens on investigation, enter deliberate-dialog: present your understanding of the research question, proposed scope, and query type to the user and iterate via `vscode_askQuestions` until the user gives an explicit action trigger (e.g., "go ahead", "research it", "investigate"). See the `deliberate-dialog` skill for the full protocol. This prevents wasting effort on a misunderstood direction — a 30-second confirmation loop is cheaper than a wrong report.
+
 ### 1. Scope
 
 Define before investigating:

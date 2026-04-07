@@ -73,6 +73,10 @@ If no active goal is in progress:
 2. Run the *Planner* subagent to break the milestone into a working plan with backlog items, context, and acceptance criteria.
 3. Write `copilot-active-plan.md`.
 
+#### Confirmation Checkpoint
+
+Enter deliberate-dialog: present the active plan to the user and iterate via `vscode_askQuestions` until the user gives an explicit action trigger (e.g., "implement", "work", "go ahead"). See the `deliberate-dialog` skill for the full protocol.
+
 
 #### 1c: Stage Planning
 
