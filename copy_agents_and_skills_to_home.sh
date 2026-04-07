@@ -6,6 +6,7 @@ GENERAL_SKILLS=(
     committee-member
     skill-creator
     research
+    deliberate-dialog
 )
 for skill in "${GENERAL_SKILLS[@]}"
 do
