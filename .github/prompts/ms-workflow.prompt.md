@@ -69,8 +69,9 @@ Run at the start of every session.
 #### 1b: Active Goal Selection
 
 1. Ask the user to confirm: review `copilot-project-plan.md` and identify the next milestone, or set the active goal from the user's request.
-2. Break the milestone into a working plan with backlog items, context, and acceptance criteria.
-3. Write `copilot-active-plan.md`.
+2. **(Optional) Research** — If the milestone is complex, touches unfamiliar domains, or the user explicitly requests research: invoke the `research` skill to investigate before planning. Save the report to `<mission>/copilot-desk/research/{milestone-slug}.md`. Pass the report file path to the planning step so the active plan is grounded in the research findings. Skip this step for straightforward milestones where existing context is sufficient.
+3. Break the milestone into a working plan with backlog items, context, and acceptance criteria. If a research report exists from step 2, include its file path when planning.
+4. Write `copilot-active-plan.md`.
 
 #### 1c: Stage Planning
 
