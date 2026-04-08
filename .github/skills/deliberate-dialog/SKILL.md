@@ -43,7 +43,7 @@ The key question is some variant of: "Here's what I'm thinking. What would you c
 
 Each iteration follows the same cycle:
 
-1. **Present** — Show the current version of whatever you're confirming (plan, approach, interpretation). Keep it concise — the user should be able to react quickly.
+1. **Present** — Save the current version of whatever you're confirming (plan, approach, interpretation) to memory. Then show the path and summarized content in chat. Don't write this to question title.
 2. **Ask** — Use `vscode_askQuestions` to invite feedback. Frame questions to surface disagreement: offer alternatives, ask about specific concerns, or highlight assumptions you're unsure about.
 3. **Incorporate** — Apply the user's feedback. If the feedback is vague, ask a focused follow-up rather than guessing.
 4. **Loop back** — Return to step 1 with the revised version. Never assume the discussion is over.
