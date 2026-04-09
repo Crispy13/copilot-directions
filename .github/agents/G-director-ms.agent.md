@@ -76,7 +76,7 @@ If no active goal is in progress:
 
 #### Confirmation Checkpoint
 
-Enter deliberate-dialog: present the active plan to the user and iterate via `vscode_askQuestions` until the user gives an explicit action trigger (e.g., "implement", "work", "go ahead"). See the `deliberate-dialog` skill for the full protocol.
+Enter discussion-mode: present the active plan to the user and iterate via `vscode_askQuestions` until the user gives an explicit action trigger (e.g., "implement", "work", "go ahead"). See the `discussion-mode` skill for the full protocol.
 
 
 #### 1c: Stage Planning

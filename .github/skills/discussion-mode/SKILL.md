@@ -1,5 +1,5 @@
 ---
-name: deliberate-dialog
+name: discussion-mode
 description: >-
   Structured iterative confirmation loop using vscode_askQuestions. Use this skill whenever you
   need to confirm user intent before committing to expensive, destructive, or ambiguous actions —
@@ -61,7 +61,7 @@ The agent stays in this loop until the user explicitly exits. Do not auto-exit b
 - A feeling that "enough" iterations have passed
 
 ### Exit
-
+You MUST not exit the loop without the second confirmation. (see below)
 The user ends the loop with an explicit action trigger. Recognize these patterns:
 
 - Direct commands: "implement", "do it", "go ahead", "execute", "proceed"
@@ -69,7 +69,7 @@ The user ends the loop with an explicit action trigger. Recognize these patterns
 - Discussion closers: "end discuss", "done discussing", "that's all"
 - Goal-oriented: "complete the goal", "finish this"
 
-On receiving an exit trigger, ask for a second confirmation ("Are you sure?"). If the user confirms, proceed immediately to the next workflow phase.
+On receiving an exit trigger, ask for a second confirmation ("Are you sure to exit discussion-mode and proceed to the next step?"). If the user confirms, proceed immediately to the next workflow phase.
 
 ### Practical Guidelines
 
@@ -83,13 +83,13 @@ On receiving an exit trigger, ask for a second confirmation ("Are you sure?"). I
 
 ## How Other Skills and Agents Reference This
 
-Skills and agents that want deliberate-dialog at a checkpoint include a brief reference in their instructions:
+Skills and agents that want discussion-mode at a checkpoint include a brief reference in their instructions:
 
 ```markdown
 #### Confirmation Checkpoint
-Enter deliberate-dialog: present [the plan / the active plan / the approach] to the user
+Enter discussion-mode: present [the plan / the active plan / the approach] to the user
 and iterate via `vscode_askQuestions` until the user gives an explicit action trigger
-(e.g., "implement", "work", "go ahead"). See the `deliberate-dialog` skill for the full protocol.
+(e.g., "implement", "work", "go ahead"). See the `discussion-mode` skill for the full protocol.
 ```
 
 This keeps the referencing skill lean while pointing to a single source of truth for the loop behavior.
