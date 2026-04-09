@@ -73,7 +73,9 @@ On receiving an exit trigger, ask for a second confirmation ("Are you sure to ex
 
 ### Practical Guidelines
 
-**Keep presentations brief.** Each loop iteration should be scannable in seconds. If the plan is long, highlight what changed since the last iteration.
+**Keep neutral.** The user may be right or wrong, so may you. Neither follow opinions blindly nor assume that your own perspective is always correct.
+
+**Keep presentations brief.** Each loop iteration should be scannable in seconds. If the content is long, then save it to session memory and show the path to user in chat and highlight what changed since the last iteration in chat also.
 
 **Use options when possible.** `vscode_askQuestions` supports multiple-choice options — use them to make feedback low-friction. But always allow freeform input alongside options.
 

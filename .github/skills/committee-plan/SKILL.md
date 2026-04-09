@@ -155,7 +155,7 @@ Quality bar:
 - State assumptions, dependencies, and rollout risks instead of smoothing them over.
 - Prefer plans that are executable and reviewable, not just plausible at a high level.
 
-Rules: NO code blocks — describe changes, link to files and specific symbols/functions.
+Rules: NO code blocks — describe changes, link to files and specific symbols/functions. Do NOT read other members' draft files (`draft-*.md`) — research independently using only the codebase and user requirements.
 ```
 
 Replace `{member-name}` with: `opus`, `sonnet`, `gemini`, `gpt`.
@@ -239,6 +239,8 @@ Quality bar:
 - Accept, counter, or propose with concrete reasoning instead of preference language.
 - Cite the evidence, dependency, or constraint that changed your position, if any.
 - Keep focus on the current resolution question; do not rewrite settled areas unless new evidence materially changes them.
+
+Rules: NO code blocks. Do NOT read other members' round response files (`round-*.md`) — read ONLY the consolidated plan above.
 
 Write your response to: /memories/session/committee/round-{N}-{member-name}.md
 ```

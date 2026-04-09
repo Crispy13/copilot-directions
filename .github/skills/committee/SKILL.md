@@ -247,7 +247,7 @@ Quality bar:
 - Make the recommendation actionable: say what to do, why, and what practical effect it should have.
 - State assumptions instead of filling gaps silently.
 
-Rules: no code blocks unless the topic specifically requires code to make the reasoning legible.
+Rules: no code blocks unless the topic specifically requires code to make the reasoning legible. Do NOT read other members' draft files (`draft-*.md`) — research independently using only the codebase and external sources.
 ```
 
 Replace `{member-name}` with: `opus`, `sonnet`, `gemini`, `gpt`.
@@ -329,7 +329,7 @@ Quality bar:
 - Cite the evidence or constraint that changed your position, if any.
 - Keep focus on the current resolution question; do not rewrite settled areas unless new evidence materially changes them.
 
-Rules: no code blocks unless they are required to explain the reasoning clearly.
+Rules: no code blocks unless they are required to explain the reasoning clearly. Do NOT read other members' round response files (`round-*.md`) — read ONLY the consolidated document above.
 
 Write your response to: /memories/session/committee/round-{N}-{member-name}.md
 ```
