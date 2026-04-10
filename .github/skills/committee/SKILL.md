@@ -274,7 +274,7 @@ Write your plan to: /memories/session/committee/draft-{member-name}.md
 Load the `committee-member` skill and follow Mode 3 (Planning). If the skill cannot be loaded, report the failure and stop. Research the codebase thoroughly before drafting.
 
 Use the Topic Format Catalog section named: Plan
-Required headings for this plan: Plan title, TL;DR, Steps, Relevant files, Verification, Decisions, Risks
+Required structure for this plan: ## Plan: {Title}, TL;DR paragraph, then sections — Steps, Relevant files, Verification, Decisions (if applicable), Risks
 
 Quality bar:
 - Ground the steps in concrete evidence such as files, functions, existing patterns, observed constraints, or user-provided requirements.
