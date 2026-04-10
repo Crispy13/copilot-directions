@@ -102,3 +102,69 @@ Quality bar:
    - **REJECT:** Does not belong. Reason: {why}
    - **MODIFY:** Include with changes: {what to change}
 4. Write your response to the file path specified by the Chief.
+
+## Mode 3: Planning
+
+When the Chief asks you to draft a **plan**, use this mode instead of Mode 1. The workflow is similar but uses a planning-specific discovery process and output format that captures dependencies, parallelism, verification steps, and scope boundaries — things a generic analysis draft wouldn't surface.
+
+### 1. Discovery
+
+> Do NOT read other members' draft files (`draft-*.md`). Research using only the codebase and external sources.
+
+Run the *Explore* subagent to gather context, analogous existing features to use as implementation templates, and potential blockers or ambiguities. When the task spans multiple independent areas (e.g., frontend + backend, different features, separate repos), launch **2-3 *Explore* subagents in parallel** — one per area — to speed up discovery. Use web search for external knowledge if applicable.
+
+### 2. Analyze
+
+Synthesize findings into a planning frame:
+- Identify implementation steps and their dependencies
+- Spot which steps can run in parallel vs. which block on prior steps
+- Surface constraints, risks, and scope boundaries from the codebase
+- Note specific functions, types, and patterns to reuse — not just file names
+
+### 3. Draft Plan
+
+Draft your plan using the format below. The Chief needs structured, comparable plans from each member to consolidate effectively.
+
+```markdown
+## Plan: {Title (2-10 words)}
+
+{TL;DR — what, why, and recommended approach.}
+
+**Steps**
+1. {Step — note dependency ("*depends on step N*") or parallelism ("*parallel with step N*") when applicable}
+2. {For plans with 5+ steps, group steps into named phases that are each independently verifiable}
+
+**Relevant files**
+- `{full/path/to/file}` — {what to modify or reuse, referencing specific functions/patterns}
+
+**Verification**
+1. {Specific verification steps — tests, commands, checks; not generic statements}
+
+**Decisions** (if applicable)
+- {Decision, assumptions, and included/excluded scope}
+
+**Risks**
+- {Risk and mitigation or why it's acceptable}
+```
+
+Quality criteria:
+- NO code blocks — describe changes, link to files and specific symbols/functions
+- Step-by-step implementation with explicit dependencies and parallelism markers
+- Reference specific functions, types, and patterns — not vague descriptions
+- Explicit scope boundaries — what's included and what's deliberately excluded
+- Verification steps must be concrete enough that someone can tell whether the plan worked or failed
+- Leave no ambiguity
+
+### 4. Self-Review
+
+Before submitting, critically review your plan:
+- Are dependencies between steps correctly identified? Could any steps run in parallel that you marked as sequential?
+- Are file paths real and verified from your research?
+- Is every step concrete enough for an implementer to act on without asking questions?
+- Are scope boundaries clear — what's in, what's out, and why?
+
+Revise to address any weaknesses. If loose ends remain, loop back to **Discovery** for more context.
+
+### 5. Save
+
+Write your final plan to the file path specified by the Chief using `#tool:vscode/memory`.
