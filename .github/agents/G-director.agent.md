@@ -44,6 +44,9 @@ For each step in the plan:
 2. List any known issues, caveats, or follow-up items.
 3. Present the final summary to the user.
 
+### Phase 4: Discussion with Result
+Enter dicussion for the result using `discussion-mode` skill. If user request further changes, implement it and re-enter discussion mode.
+
 ## Subplan Format (Orchestrator → CodeEngineer)
 
 ```
