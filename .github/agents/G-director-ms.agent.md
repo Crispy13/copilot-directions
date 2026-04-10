@@ -73,6 +73,7 @@ If no active goal is in progress:
 2. **(Optional) Research** — If the milestone is complex, touches unfamiliar domains, or the user explicitly requests research: invoke the `research` skill to investigate before planning. Save the report to `<mission>/copilot-desk/research/{milestone-slug}.md`. Pass the report file path to the Planner in the next step so the active plan is grounded in the research findings. Skip this step for straightforward milestones where existing context is sufficient.
 3. Run the *Planner* subagent to break the milestone into a working plan with backlog items, context, and acceptance criteria. If a research report exists from step 2, include its file path in the Planner prompt.
 4. Write `copilot-active-plan.md`.
+5. **Director Review** — Read `copilot-active-plan.md`. Validate against the context gathered earlier in this phase; fix issues and improve the plan directly if needed. Then proceed.
 
 #### Confirmation Checkpoint
 
@@ -91,6 +92,7 @@ Derive the next stage from the active goal's backlog:
    - Acceptance criteria.
    - Tests to run (if applicable).
 3. Write `copilot-stage-plan.md`.
+4. **Director Review** — Read `copilot-stage-plan.md`. Validate against the active plan and context gathered; fix issues and improve the plan directly if needed. Then proceed.
 
 > **One backlog item = one stage.** Do not bundle multiple backlog items into a single stage.
 

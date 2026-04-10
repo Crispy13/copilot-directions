@@ -53,23 +53,29 @@ then use `vscode_askQuestions` with concise questions.
 </Present-Example>
 2. **Ask** — Use `vscode_askQuestions` to invite feedback. Frame questions to surface disagreement: offer alternatives, ask about specific concerns, or highlight assumptions you're unsure about.
 3. **Incorporate** — Apply the user's feedback. If the feedback is vague, ask a focused follow-up rather than guessing.
-4. **Loop back** — Return to step 1 with the revised version. Never assume the discussion is over.
+4. **In-loop actions** — When the user orders a bounded task that informs the discussion — "investigate X", "look into Y", "research this approach", "draft an alternative plan", "check if Z is feasible" — execute that task and return with the results as the next iteration. These tasks deepen the shared understanding; they are not exit signals. After completing the task, present the results and loop back to step 1.
+5. **Loop back** — Return to step 1 with the revised version or new findings. Never assume the discussion is over.
 
 The agent stays in this loop until the user explicitly exits. Do not auto-exit based on:
 - The user saying "looks good" without an exit trigger (they might have more to add)
 - Running out of things to ask about (the user decides when they're done, not you)
 - A feeling that "enough" iterations have passed
+- The agent completing an in-loop task (finishing a research or investigation task means looping back, not exiting)
 
 ### Exit
 You MUST not exit the loop without the second confirmation. (see below)
-The user ends the loop with an explicit action trigger. Recognize these patterns:
 
-- Direct commands: "implement", "do it", "go ahead", "execute", "proceed"
-- Task-oriented: "work", "start", "build it", "ship it"
-- Discussion closers: "end discuss", "done discussing", "that's all"
+Only **implementation-specific** signals exit the loop. The user is signaling they want code written, files changed, or systems affected:
+
+- Implementation commands: "implement [it]", "build it", "ship it", "write the code", "make the changes", "apply [it]", "code it up", "deploy it"
+- Explicit discussion enders: "end discuss", "done discussing", "that's all"
 - Goal-oriented: "complete the goal", "finish this"
 
-On receiving an exit trigger, ask for a second confirmation ("Are you sure to exit discussion-mode and proceed to the next step?"). If the user confirms, proceed immediately to the next workflow phase.
+**Ambiguous phrases** — "do it", "go ahead", "proceed", "work", "start", "execute" — are context-dependent:
+- If the user just pointed at a specific sub-task (investigate, research, plan, look into something), treat it as an in-loop action. Execute the task and loop back.
+- If it stands alone as a response to a plan or approach presentation with no sub-task in view, treat it as a potential exit and apply the second confirmation.
+
+On receiving a clear exit signal, ask for a second confirmation ("Are you sure to exit discussion-mode and proceed to implementation?"). If the user confirms, proceed immediately to the next workflow phase.
 
 ### Practical Guidelines
 

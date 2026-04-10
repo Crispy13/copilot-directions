@@ -72,12 +72,14 @@ Run at the start of every session.
 2. **(Optional) Research** — If the milestone is complex, touches unfamiliar domains, or the user explicitly requests research: invoke the `research` skill to investigate before planning. Save the report to `<mission>/copilot-desk/research/{milestone-slug}.md`. Pass the report file path to the planning step so the active plan is grounded in the research findings. Skip this step for straightforward milestones where existing context is sufficient.
 3. Break the milestone into a working plan with backlog items, context, and acceptance criteria. If a research report exists from step 2, include its file path when planning.
 4. Write `copilot-active-plan.md`.
+5. **Director Review** — Read `copilot-active-plan.md`. Validate against the context gathered earlier in this phase; fix issues and improve the plan directly if needed. Then proceed.
 
 #### 1c: Stage Planning
 
 1. Review `copilot-active-plan.md` to identify the next backlog item.
 2. Produce a stage plan — a single focused sub-goal with: objective, context, files to modify/create, acceptance criteria, tests (if applicable).
 3. Write `copilot-stage-plan.md`.
+4. **Director Review** — Read `copilot-stage-plan.md`. Validate against the active plan and context gathered; fix issues and improve the plan directly if needed. Then proceed.
 
 > **One backlog item = one stage.** Do not bundle multiple items.
 
