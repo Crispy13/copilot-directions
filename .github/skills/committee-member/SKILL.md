@@ -123,31 +123,9 @@ Synthesize findings into a planning frame:
 
 ### 3. Draft Plan
 
-Draft your plan using the format below. The Chief needs structured, comparable plans from each member to consolidate effectively.
+Draft your plan using the **output format specified in the Chief's dispatch prompt**. The Chief provides the format for planning topics — do not invent your own. The Chief needs structured, comparable plans from each member to consolidate effectively.
 
-```markdown
-## Plan: {Title (2-10 words)}
-
-{TL;DR — what, why, and recommended approach.}
-
-**Steps**
-1. {Step — note dependency ("*depends on step N*") or parallelism ("*parallel with step N*") when applicable}
-2. {For plans with 5+ steps, group steps into named phases that are each independently verifiable}
-
-**Relevant files**
-- `{full/path/to/file}` — {what to modify or reuse, referencing specific functions/patterns}
-
-**Verification**
-1. {Specific verification steps — tests, commands, checks; not generic statements}
-
-**Decisions** (if applicable)
-- {Decision, assumptions, and included/excluded scope}
-
-**Risks**
-- {Risk and mitigation or why it's acceptable}
-```
-
-Quality criteria:
+General quality criteria (in addition to the dispatch-specific quality bar):
 - NO code blocks — describe changes, link to files and specific symbols/functions
 - Step-by-step implementation with explicit dependencies and parallelism markers
 - Reference specific functions, types, and patterns — not vague descriptions

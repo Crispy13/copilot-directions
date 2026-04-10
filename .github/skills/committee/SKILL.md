@@ -40,6 +40,7 @@ Select the format before dispatching members. The format choice matters because 
 | **Research / Investigation** | gathering facts, mapping the landscape, and explaining what is known versus unknown | Avoid it when the user needs a concrete decision rather than a research brief. |
 | **Design Decision / RFC** | choosing a direction under constraints with explicit pros, cons, and rationale | Avoid it when the committee should compare options without forcing a single decision yet. |
 | **Comparative Analysis** | evaluating competing tools, approaches, or vendors against shared criteria | Avoid it when the options are not yet concrete enough to compare side by side. |
+| **Plan** | sequencing, dependency ordering, phased implementation, or verification strategy | Avoid it when the deliverable is analysis or judgment rather than an executable step-by-step sequence; use **Design Decision / RFC** instead. |
 
 ### Hybrid Topics
 
@@ -48,6 +49,7 @@ Use the format that matches the primary deliverable, then pull supporting materi
 - Research feeding a decision: use **Design Decision / RFC** and let research appear inside `Evidence / Basis` and `Open Questions`.
 - Bug plus remediation design: use **Bug / Root-Cause Analysis** if diagnosis is the hard part, or **Architecture / Design Review** if the diagnosis is settled and the debate is about the fix.
 - Tool comparison that ends with a recommendation: use **Comparative Analysis** if the comparison itself is the value; use **Design Decision / RFC** if the recommendation and constraints are the center of gravity.
+- Analysis feeding a plan: use **Plan** when the deliverable is an actionable execution sequence; use the analytical format (Architecture / Design Review, Research, etc.) if the hard part is the analysis and the plan is secondary.
 
 ## Topic Format Catalog
 
@@ -213,6 +215,37 @@ Before dispatching members, select one format from this catalog and name it expl
 - `Recommendation Threshold`: Explain what evidence or condition would justify a recommendation. This is useful when the committee can narrow the field but should not pretend the final call is settled yet.
 - `Unknowns / Caveats`: Surface the uncertainties that could flip the ranking. That makes later validation work targeted instead of broad and fuzzy.
 
+### Plan
+
+```
+## Plan: {Title (2-10 words)}
+
+{TL;DR — what, why, and recommended approach.}
+
+**Steps**
+1. {Step — note dependency ("*depends on step N*") or parallelism ("*parallel with step N*") when applicable}
+2. {For plans with 5+ steps, group steps into named phases that are each independently verifiable}
+
+**Relevant files**
+- `{full/path/to/file}` — {what to modify or reuse, referencing specific functions/patterns}
+
+**Verification**
+1. {Specific verification steps — tests, commands, checks; not generic statements}
+
+**Decisions** (if applicable)
+- {Decision, assumptions, and included/excluded scope}
+
+**Risks**
+- {Risk and mitigation or why it is acceptable}
+```
+
+- `TL;DR`: State the plan recommendation plainly. Name the intended outcome, the reason this path wins, and any major assumption the plan depends on.
+- `Steps`: Sequence work so a reader can execute it without reverse-engineering dependencies. Mark steps that can run in parallel or depend on a prior step. For plans with 5+ steps, group into named phases that are each independently verifiable.
+- `Relevant files`: Ground the plan in real code locations, interfaces, commands, or documents. List specific functions or patterns to reuse, not just file names.
+- `Verification`: Cover the key claims from the chosen path, including risk-heavy areas, not just the happy path. Each check should be concrete enough that someone can tell whether the step worked or failed.
+- `Decisions`: Record meaningful scope or architecture choices that explain the plan shape. State what is in scope, what is excluded, and the assumption that would force a change.
+- `Risks`: Name the downside, the trigger condition, and either the mitigation or an explanation of why the risk is acceptable. Strong plans make risks legible instead of smoothing them over.
+
 If the topic does not fit any category, use **Default**.
 
 ## Procedure
@@ -228,6 +261,31 @@ Each member independently:
 - Self-reviews and iterates before submitting
 
 **Dispatch prompt for each member:**
+
+**When Plan format is selected**, use this dispatch prompt instead:
+
+```
+You are a committee member drafting a plan for the following topic:
+
+{user's planning topic/problem — paste the full brief}
+
+Write your plan to: /memories/session/committee/draft-{member-name}.md
+
+Load the `committee-member` skill and follow Mode 3 (Planning). If the skill cannot be loaded, report the failure and stop. Research the codebase thoroughly before drafting.
+
+Use the Topic Format Catalog section named: Plan
+Required headings for this plan: Plan title, TL;DR, Steps, Relevant files, Verification, Decisions, Risks
+
+Quality bar:
+- Ground the steps in concrete evidence such as files, functions, existing patterns, observed constraints, or user-provided requirements.
+- Make verification specific enough that someone could tell whether the plan worked or failed.
+- State assumptions, dependencies, and risks instead of smoothing them over.
+- Prefer plans that are executable and reviewable, not just plausible at a high level.
+
+Rules: NO code blocks — describe changes, link to files and specific symbols/functions. Do NOT read other members' draft files (`draft-*.md`) — research independently using only the codebase and external sources.
+```
+
+**For all other formats**, use the default dispatch prompt:
 
 ```
 You are a committee member deliberating on the following topic:
@@ -430,3 +488,4 @@ Outcome: {1-2 sentence summary}. Minority wisdom included: {yes|no}.
 - Members should not edit code files or run implementation commands. Deliberation stays cleaner when members focus on analysis instead of drifting into execution.
 - Use the selected format consistently. Structured outputs make convergence tracking, evidence comparison, and final synthesis much easier.
 - Show progress to the user after each phase completes using the templates above. Short, high-signal updates make the process easier to trust and easier to interrupt if the user wants to redirect it.
+- If subagent call fails, try it again but up to 3 total attempts. If it still fails, record the failure and proceed with the remaining members instead of blocking the whole process.
