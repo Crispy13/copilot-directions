@@ -77,6 +77,14 @@ Only **implementation-specific** signals exit the loop. The user is signaling th
 
 On receiving a clear exit signal, ask for a second confirmation ("Are you sure to exit discussion-mode and proceed to implementation?"). If the user confirms, proceed immediately to the next workflow phase.
 
+### Behavior After Exit
+
+Discussion-mode is a checkpoint inserted into a larger workflow — not a workflow of its own. When the user exits, **resume the caller's workflow at the exact step that follows the checkpoint.** Do not reinterpret the exit signal as a new instruction or skip ahead in the workflow.
+
+The exit signal means "I approve what we discussed — now continue with your process." It does not mean "do whatever you think is best" or "skip ahead." Whatever the caller's workflow prescribes as the next step after the checkpoint, do that. Re-read your agent instructions if needed to recall where you left off.
+
+This matters because long discussion loops erode the agent's sense of place in the workflow. After several iterations of presenting, asking, and incorporating feedback, the agent can lose track of its caller's process and default to acting on its own. Explicitly returning to the caller's workflow prevents this drift.
+
 ### Practical Guidelines
 
 **Keep neutral.** The user may be right or wrong, so may you. Neither follow opinions blindly nor assume that your own perspective is always correct.
