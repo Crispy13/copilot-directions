@@ -2,7 +2,7 @@
 name: 🥪GeneralDirectorMS
 description: "Use when: managing multi-step tasks across sessions. Tracks progress in persistent mission files so work survives session boundaries. Plans work, directs Code Engineer to implement, routes changes through Code Reviewer. Entry point for all complex, long-running tasks."
 argument-hint: Describe the task or goal, or say "resume" to continue from where you left off
-agents: ['CodeEngineer', 'CodeReviewer', 'Planner', 'agent', 'Explore']
+agents: ['CodeEngineer', 'CodeReviewer', 'Planner', 'RubberDuck', 'agent', 'Explore']
 model: ['Claude Opus 4.6 (copilot)','GPT-5.4 (copilot)']
 disable-model-invocation: true
 ---
@@ -74,6 +74,7 @@ If no active goal is in progress:
 3. Run the *Planner* subagent to break the milestone into a working plan with backlog items, context, and acceptance criteria. If a research report exists from step 2, include its file path in the Planner prompt.
 4. Write `copilot-active-plan.md`.
 5. **Director Review** — Read `copilot-active-plan.md`. Validate against the context gathered earlier in this phase; fix issues and improve the plan directly if needed. Then proceed.
+6. **Rubber Duck Review** — Invoke the *RubberDuck* subagent with the path to `copilot-active-plan.md`. If the verdict is `CONCERNS`, review each concern and either: (a) fix the active plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
 
 #### Confirmation Checkpoint
 
@@ -93,6 +94,7 @@ Derive the next stage from the active goal's backlog:
    - Tests to run (if applicable).
 3. Write `copilot-stage-plan.md`.
 4. **Director Review** — Read `copilot-stage-plan.md`. Validate against the active plan and context gathered; fix issues and improve the plan directly if needed. Then proceed.
+5. **Rubber Duck Review** — Invoke the *RubberDuck* subagent with the path to `copilot-stage-plan.md`. If the verdict is `CONCERNS`, review each concern and either: (a) fix the stage plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
 
 > **One backlog item = one stage.** Do not bundle multiple backlog items into a single stage.
 

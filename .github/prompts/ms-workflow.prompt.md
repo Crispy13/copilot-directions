@@ -73,6 +73,7 @@ Run at the start of every session.
 3. Break the milestone into a working plan with backlog items, context, and acceptance criteria. If a research report exists from step 2, include its file path when planning.
 4. Write `copilot-active-plan.md`.
 5. **Director Review** — Read `copilot-active-plan.md`. Validate against the context gathered earlier in this phase; fix issues and improve the plan directly if needed. Then proceed.
+6. **Rubber Duck Review** — Invoke the *RubberDuck* subagent (or equivalent cross-model reviewer) with the path to `copilot-active-plan.md`. If the verdict is `CONCERNS`, review each concern and either: (a) fix the active plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
 
 #### 1c: Stage Planning
 
@@ -80,6 +81,7 @@ Run at the start of every session.
 2. Produce a stage plan — a single focused sub-goal with: objective, context, files to modify/create, acceptance criteria, tests (if applicable).
 3. Write `copilot-stage-plan.md`.
 4. **Director Review** — Read `copilot-stage-plan.md`. Validate against the active plan and context gathered; fix issues and improve the plan directly if needed. Then proceed.
+5. **Rubber Duck Review** — Invoke the *RubberDuck* subagent (or equivalent cross-model reviewer) with the path to `copilot-stage-plan.md`. If the verdict is `CONCERNS`, review each concern and either: (a) fix the stage plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
 
 > **One backlog item = one stage.** Do not bundle multiple items.
 
