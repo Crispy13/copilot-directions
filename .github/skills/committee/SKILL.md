@@ -41,6 +41,7 @@ Select the format before dispatching members. The format choice matters because 
 | **Design Decision / RFC** | choosing a direction under constraints with explicit pros, cons, and rationale | Avoid it when the committee should compare options without forcing a single decision yet. |
 | **Comparative Analysis** | evaluating competing tools, approaches, or vendors against shared criteria | Avoid it when the options are not yet concrete enough to compare side by side. |
 | **Plan** | sequencing, dependency ordering, phased implementation, or verification strategy | Avoid it when the deliverable is analysis or judgment rather than an executable step-by-step sequence; use **Design Decision / RFC** instead. |
+| **Custom** | The caller provides a format reference file and a section name instead of selecting from the catalog | Avoid it when the topic fits a built-in format well — custom formats add a reading step for members. |
 
 ### Hybrid Topics
 
@@ -51,202 +52,29 @@ Use the format that matches the primary deliverable, then pull supporting materi
 - Tool comparison that ends with a recommendation: use **Comparative Analysis** if the comparison itself is the value; use **Design Decision / RFC** if the recommendation and constraints are the center of gravity.
 - Analysis feeding a plan: use **Plan** when the deliverable is an actionable execution sequence; use the analytical format (Architecture / Design Review, Research, etc.) if the hard part is the analysis and the plan is secondary.
 
+### Custom Format
+
+Use a custom format when the caller already has a structure worth preserving and none of the built-in formats fits cleanly. This keeps the committee aligned with the caller's framing without bloating the catalog with one-off variants.
+
+Pass two parameters:
+
+- `format_path`: the reference file to read
+- `format_section`: the section or heading in that file that defines the structure to follow
+
+When custom format is selected in Phase 1, replace the catalog lines in the dispatch prompt with these lines instead:
+
+- `Custom format reference: {format_path}`
+- `Use the "{format_section}" section from that file as the required structure for this draft`
+
+Have members read the reference file, follow the named section's headings and ordering, and still meet the normal committee quality bar for evidence, tradeoffs, and recommendations.
+
+In Phase 4, keep the standard report envelope from `final-output-format.md`, but build the main body from the selected custom section. That preserves one predictable committee wrapper while letting the core deliverable match the caller's preferred structure.
+
 ## Topic Format Catalog
 
-Before dispatching members, select one format from this catalog and name it explicitly in the dispatch prompt.
+See the [format catalog](./references/format-catalog.md) for the detailed template and guidance for each format listed in the Selection Rubric.
 
-### Default
-
-```
-## Response: {Title}
-
-{Summary — your position in 2-3 sentences}
-
-**Key Arguments**
-1. {Argument with supporting evidence or reasoning}
-2. ...
-
-**Evidence / Basis**
-- {Files, functions, observed constraints, examples, or external sources that support the position}
-
-**Risks / Concerns**
-- {Risk and why it matters}
-
-**Recommendation**
-{Your recommended course of action or conclusion}
-```
-
-- `Summary`: State the position plainly enough that a reader knows the answer before reading the details. Name the decision frame, the strongest reason, and any assumption that the recommendation depends on.
-- `Key Arguments`: Separate the major reasons instead of blending them into one paragraph. Each argument should explain why it matters, not just what the committee noticed.
-- `Evidence / Basis`: Ground claims in something concrete such as files, functions, observed behavior, constraints, experiments, or credible external sources. When evidence is indirect, say that clearly so the reader can judge confidence.
-- `Risks / Concerns`: Call out downside, trigger, and likely impact. This prevents a smooth recommendation from hiding the cost of being wrong.
-- `Recommendation`: Say what to do next, why it is the best move now, and the practical effect if the reader follows it. If there is a key caveat, include it here instead of burying it later.
-
-### Bug / Root-Cause Analysis
-
-```
-## Analysis: {Bug/Issue Title}
-
-**Hypotheses** (ranked by likelihood)
-1. {Hypothesis} — Evidence: {what supports this}
-2. ...
-
-**Evidence / Basis**
-- {Observed symptoms, relevant code paths, logs, reproductions, or prior incidents}
-
-**Eliminated**
-- {Hypothesis ruled out} — Why: {evidence against}
-
-**Recommended Investigation**
-1. {Next step to confirm/deny top hypothesis}
-```
-
-- `Hypotheses`: Rank by likelihood and say why each one is plausible. Good hypotheses connect symptom, mechanism, and scope instead of naming a vague failure area.
-- `Evidence / Basis`: Prefer direct observations such as logs, stack traces, reproductions, file paths, or code paths. If the evidence is circumstantial, explain what would strengthen or weaken it.
-- `Eliminated`: Show what you ruled out and the evidence that ruled it out. This keeps later rounds from reopening dead ends without new information.
-- `Recommended Investigation`: List concrete checks or experiments in priority order. Each step should say what result would confirm or falsify the leading theory.
-
-### Architecture / Design Review
-
-```
-## Review: {Component/System}
-
-**Strengths**
-- {What works well and why}
-
-**Weaknesses**
-- {Problem and its impact}
-
-**Evidence / Basis**
-- {Design constraints, file-level grounding, operational signals, benchmarks, or comparable patterns}
-
-**Recommendations**
-1. {Change with rationale}
-
-**Tradeoffs**
-- {What we gain vs. what we lose}
-```
-
-- `Strengths`: Name strengths that matter to the decision, not generic praise. Explain why the current design helps correctness, maintainability, cost, delivery speed, or user experience.
-- `Weaknesses`: Describe the specific failure mode or design debt and the consequence if it stays in place. Focus on the issues that change the recommendation rather than cataloging every imperfection.
-- `Evidence / Basis`: Tie each claim to architecture facts, file paths, interfaces, incidents, performance characteristics, or prior patterns. This keeps the review from turning into taste-based opinion.
-- `Recommendations`: Make each recommendation actionable enough that a reader could turn it into implementation work. State the expected benefit and any dependency or migration concern.
-- `Tradeoffs`: Show what the recommendation costs in complexity, runtime, delivery speed, or flexibility. Strong reviews make the downside legible instead of pretending there is a free win.
-
-### Research / Investigation
-
-```
-## Findings: {Topic}
-
-**Key Findings**
-1. {Finding with source/evidence}
-2. ...
-
-**Synthesis**
-{How findings connect — narrative summary}
-
-**Evidence / Basis**
-- {Primary sources, code observations, experiments, examples, or constraints that shaped the findings}
-
-**Open Questions**
-- {What remains unknown}
-
-**Conclusion**
-{Overall assessment and recommendation}
-```
-
-- `Key Findings`: Treat findings as claims that deserve evidence, not as notes. Explain what each finding means and why it matters to the user’s decision surface.
-- `Synthesis`: Connect the findings into a coherent story about the landscape, the constraints, or the likely direction. Use this section to explain patterns, tensions, and inflection points.
-- `Evidence / Basis`: Cite the observations, files, examples, experiments, or external sources that materially shaped the findings. Readers should be able to tell which conclusions are well grounded and which are provisional.
-- `Open Questions`: Name the unknowns that would materially change the conclusion. This helps the Chief distinguish between healthy uncertainty and missing work.
-- `Conclusion`: State the best current judgment and what the reader should do with it. Conclusions are stronger when they name confidence and the next decisive step.
-
-### Design Decision / RFC
-
-```
-## Decision: {Topic}
-
-**Options**
-1. **{Option A}** — {description}
-  - Pros: {advantages}
-  - Cons: {disadvantages}
-2. **{Option B}** — {description}
-  - Pros: {advantages}
-  - Cons: {disadvantages}
-
-**Evidence / Basis**
-- {Constraints, prior art, file-level grounding, experiments, or operating assumptions}
-
-**Recommendation:** {Option X}
-**Rationale:** {Why this option wins given the constraints}
-```
-
-- `Options`: Make the options genuinely comparable by using the same frame for each one. Good options explain what changes, who owns the cost, and where the risk shifts.
-- `Evidence / Basis`: Name the constraints, prior incidents, codebase realities, experiments, or external references that matter to the choice. This makes the decision legible even to someone who did not follow the full discussion.
-- `Recommendation`: Pick a direction rather than summarizing the debate. If the answer depends on a condition, say the condition explicitly.
-- `Rationale`: Explain why the chosen option wins on the actual constraints, not abstract pros and cons. Include the most important tradeoff so the decision does not read as costless.
-
-### Comparative Analysis
-
-```
-## Comparison: {Topic}
-
-**Criteria**
-1. {Criterion and why it matters}
-2. ...
-
-**Option Comparison**
-- **{Option A}** — {How it performs against the criteria}
-- **{Option B}** — {How it performs against the criteria}
-
-**Evidence / Basis**
-- {Benchmarks, examples, file-level constraints, operational needs, or external references}
-
-**Recommendation Threshold**
-{What would make one option clearly preferable, or whether the current evidence is still too thin}
-
-**Unknowns / Caveats**
-- {What could still change the outcome}
-```
-
-- `Criteria`: Pick the criteria before arguing for a winner. This keeps the comparison honest and makes tradeoffs easier to inspect.
-- `Option Comparison`: Compare each option against the same criteria and call out where the evidence is strong versus assumed. A useful comparison shows both absolute quality and fit for the user’s constraints.
-- `Evidence / Basis`: Cite benchmarks, source code constraints, operational requirements, vendor facts, examples, or experiments. The point is to show why the ranking exists, not just what the ranking is.
-- `Recommendation Threshold`: Explain what evidence or condition would justify a recommendation. This is useful when the committee can narrow the field but should not pretend the final call is settled yet.
-- `Unknowns / Caveats`: Surface the uncertainties that could flip the ranking. That makes later validation work targeted instead of broad and fuzzy.
-
-### Plan
-
-```
-## Plan: {Title (2-10 words)}
-
-{TL;DR — what, why, and recommended approach.}
-
-**Steps**
-1. {Step — note dependency ("*depends on step N*") or parallelism ("*parallel with step N*") when applicable}
-2. {For plans with 5+ steps, group steps into named phases that are each independently verifiable}
-
-**Relevant files**
-- `{full/path/to/file}` — {what to modify or reuse, referencing specific functions/patterns}
-
-**Verification**
-1. {Specific verification steps — tests, commands, checks; not generic statements}
-
-**Decisions** (if applicable)
-- {Decision, assumptions, and included/excluded scope}
-
-**Risks**
-- {Risk and mitigation or why it is acceptable}
-```
-
-- `TL;DR`: State the plan recommendation plainly. Name the intended outcome, the reason this path wins, and any major assumption the plan depends on.
-- `Steps`: Sequence work so a reader can execute it without reverse-engineering dependencies. Mark steps that can run in parallel or depend on a prior step. For plans with 5+ steps, group into named phases that are each independently verifiable.
-- `Relevant files`: Ground the plan in real code locations, interfaces, commands, or documents. List specific functions or patterns to reuse, not just file names.
-- `Verification`: Cover the key claims from the chosen path, including risk-heavy areas, not just the happy path. Each check should be concrete enough that someone can tell whether the step worked or failed.
-- `Decisions`: Record meaningful scope or architecture choices that explain the plan shape. State what is in scope, what is excluded, and the assumption that would force a change.
-- `Risks`: Name the downside, the trigger condition, and either the mitigation or an explanation of why the risk is acceptable. Strong plans make risks legible instead of smoothing them over.
-
-If the topic does not fit any category, use **Default**.
+If the topic does not fit any built-in format, use **Default**.
 
 ## Procedure
 
@@ -274,7 +102,11 @@ Write your plan to: /memories/session/committee/draft-{member-name}.md
 Load the `committee-member` skill and follow Mode 3 (Planning). If the skill cannot be loaded, report the failure and stop. Research the codebase thoroughly before drafting.
 
 Use the Topic Format Catalog section named: Plan
+Read the format catalog at ./references/format-catalog.md for the named section's template and quality guidance.
 Required structure for this plan: ## Plan: {Title}, TL;DR paragraph, then sections — Steps, Relevant files, Verification, Decisions (if applicable), Risks
+When custom format is selected, replace the three lines above with:
+Custom format reference: {format_path}
+Use the "{format_section}" section from that file as the required structure for this draft
 
 Quality bar:
 - Ground the steps in concrete evidence such as files, functions, existing patterns, observed constraints, or user-provided requirements.
@@ -297,7 +129,11 @@ Write your response to: /memories/session/committee/draft-{member-name}.md
 Load the `committee-member` skill and follow Mode 1 (Drafting). If the skill cannot be loaded, report the failure and stop. Research thoroughly before drafting.
 
 Use the Topic Format Catalog section named: {selected format name}
+Read the format catalog at ./references/format-catalog.md for the named section's template and quality guidance.
 Required headings for this draft: {selected heading list from that section}
+When custom format is selected, replace the three lines above with:
+Custom format reference: {format_path}
+Use the "{format_section}" section from that file as the required structure for this draft
 
 Quality bar:
 - Ground claims in concrete evidence such as files, functions, observed constraints, examples, or credible external sources.
@@ -442,7 +278,7 @@ Read the [final output format reference](./references/final-output-format.md) fo
 
 **Process:**
 1. Write the final document incorporating all resolved consensus.
-2. Use the same topic format selected in Phase 1 for the main body.
+2. Use the same topic format selected in Phase 1 for the main body. When the selection is custom, keep the outer committee envelope from `final-output-format.md` and use the custom section's headings for the main body.
 3. Make the main body stand on its own: each recommendation or conclusion should tell the reader what to do, why it is preferred, and what impact or caveat follows from it.
 4. Include minority wisdom when a non-winning position surfaced a real risk, constraint, or unresolved tradeoff.
 5. Include a provenance section showing how agreement was reached, including any missing members and confidence reduction under degraded mode.

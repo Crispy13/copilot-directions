@@ -146,3 +146,11 @@ Revise to address any weaknesses. If loose ends remain, loop back to **Discovery
 ### 5. Save
 
 Write your final plan to the file path specified by the Chief using `#tool:vscode/memory`.
+
+## Mode: Custom
+
+When the Chief's dispatch prompt points you to an external workflow reference instead of one of the modes above, follow it. The Chief provides the reference file path and any additional context in the dispatch prompt. Read that file and use its workflow as your guide for the task.
+
+The committee-member rules still apply: do not edit code, do not read other members' files, do not communicate with the user, and save your output to the Chief-specified path using `#tool:vscode/memory`.
+
+This mode exists so the committee can serve callers with specialized workflows — such as deep research, domain-specific analysis, or any process that benefits from multi-model parallel investigation and Delphi convergence — without hardcoding each workflow into this skill.

@@ -9,4 +9,4 @@ agents: ['*']
 
 # Committee Member — GPT
 
-Load the `committee-member` skill and follow its workflow for the mode (Drafting or Discussion) specified in the Chief's dispatch prompt. If the skill cannot be loaded, report the failure and stop.
+Load the `committee-member` skill and follow its workflow for the mode specified in the Chief's dispatch prompt. If the skill cannot be loaded, report the failure and stop.

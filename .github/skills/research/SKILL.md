@@ -1,16 +1,12 @@
 ---
 name: research
 description: >-
-  Deep research and investigation that produces a comprehensive Markdown report. Use this skill
-  whenever a question requires thorough investigation rather than a quick answer — codebase
-  architecture analysis, technology comparisons, implementation pattern discovery, API deep-dives,
-  understanding how systems work, or exploring unfamiliar domains. Triggers on "research this",
-  "investigate", "deep dive into", "how does X work", "compare approaches for", "what's the
-  architecture of", "explore how", "analyze the implementation of", or when you detect the
-  question needs multi-source investigation that a single search can't answer. Also use when
-  planning stalls due to unknowns, or when comparing technologies, libraries, or design
-  approaches. Produces a saved report artifact, not code changes. Do NOT use for simple
-  fact-checking, quick questions, or when the user wants code modifications.
+  Deep research and investigation that produces a comprehensive Markdown report. Use for
+  architecture analysis, technology comparisons, API deep-dives, implementation pattern discovery,
+  and other multi-source questions a single search cannot answer. Triggers on "research this",
+  "investigate", "deep dive into", "how does X work", or "compare approaches for". Also use
+  when the user requests committee or multi-model research, or when planning stalls on unknowns.
+  Not for simple fact-checking, quick questions, or code modifications.
 argument-hint: "Describe the question or topic to investigate"
 ---
 
@@ -49,43 +45,11 @@ See [report formats](./references/report-formats.md) for the template for each q
 
 Before spending tokens on investigation, enter discussion-mode: present your understanding of the research question, proposed scope, and query type to the user and iterate via `vscode_askQuestions` until the user gives an explicit action trigger (e.g., "go ahead", "research it", "investigate"). See the `discussion-mode` skill for the full protocol. This prevents wasting effort on a misunderstood direction — a 30-second confirmation loop is cheaper than a wrong report.
 
-### 1. Scope
+### 1–4. Investigate and Write
 
-Define before investigating:
+Follow the [investigation process](./references/investigation-process.md) for the core workflow: Scope, Investigate, Analyze, Draft, and Self-Review. The process covers depth calibration, effort budgets, primary-source priority, and honest confidence assessment.
 
-- **Research question** — precise and answerable. "How should we build auth?" is too vague. "What authentication approaches integrate with our Express + PostgreSQL stack given SSO requirements?" is actionable. If the user's question is vague, refine it yourself.
-- **Boundaries** — what's in scope, what's out. Without boundaries, investigation expands endlessly into "related" topics.
-- **Query type** — classify using the table above.
-- **Depth calibration** — match effort to stakes. A library API check: 1-2 page report, 5-10 tool calls. An architecture decision affecting months of work: thorough 4-6 page report, 30+ tool calls.
-
-### 2. Investigate
-
-Go broad first to map the landscape, then deep on what matters.
-
-**Effort budget:** If you've made 20+ tool calls without converging — are you still learning, or circling? If circling, write the report with what you have and flag the gaps. Incomplete findings with honest confidence markers beat exhaustive search with no synthesis.
-
-**Strategic guidance:**
-
-- Prioritize primary sources (code, official docs) over secondary (blogs, summaries) — primary sources are what decisions get built on
-- Start from entry points and work inward — reading everything produces noise, not signal
-- Document findings as you go — don't rely on memory across many tool calls
-- Dead ends are findings — noting what you didn't find is valuable for Confidence Assessment
-
-### 3. Analyze
-
-This is where research becomes more than a collection of facts.
-
-- Look for patterns across sources — what keeps coming up independently?
-- Identify contradictions or tensions — these often reveal the most important tradeoffs
-- Separate facts (grounded in evidence) from inferences (your reasoning) — this distinction is what makes Confidence Assessment honest
-- For comparisons, evaluate all options against the same criteria
-- Assess your own confidence — where is the evidence strong vs. thin?
-
-### 4. Write the Report
-
-Follow the [report format](./references/report-formats.md) for your query type. The report should stand on its own — a reader without conversation context should understand the findings, evidence, and reasoning.
-
-Match report length to question complexity: a focused question gets a focused report (1-2 pages), not padding. A complex architecture question earns 4-6 pages.
+Use the [report format](./references/report-formats.md) matching your query type for the draft structure.
 
 **Save the report:**
 
@@ -104,6 +68,46 @@ After saving the report:
    - If the research reveals more unknowns → ask whether another round of research is needed or if the current findings are sufficient
 
 Research that doesn't connect to the next action is just trivia.
+
+## Committee Mode
+
+When the topic benefits from independent lines of inquiry — contested interpretations, ambiguous evidence, or high enough stakes that four parallel investigators surface more than one — use committee mode instead of single-agent research. Skip it when one researcher can answer cleanly; committee overhead only pays off when diverse perspectives change the outcome.
+
+### How It Works
+
+Run step 0 (Confirm Intent) normally, then hand off the investigation to the `committee` skill's Delphi process (Phases 1–4). Return to step 5 (Present and Transition) after the committee finishes.
+
+Load the `committee` skill and apply these research-specific overrides:
+
+| Setting | Override | Why |
+|---------|----------|-----|
+| **Format** | Custom → `.github/skills/research/references/report-formats.md`, section = classified query type | Preserves the report shapes readers already expect from research artifacts |
+| **Member mode** | Mode: Custom (`committee-member` skill), workflow reference → `./references/investigation-process.md` | Members follow the custom mode with the research investigation workflow, without loading the full research skill (avoids recursive committee invocation) |
+| **Deadlocks** | No user escalation — Chief resolves by evidence, records minority view and confidence limits | Research consumed its user checkpoint in step 0; mid-run tie-breaking stalls autonomous investigation |
+| **Save location** | Research convention (`<mission>/copilot-desk/research/{topic-slug}.md` or caller-specified) | Where the report lives should not change because four models wrote it instead of one |
+
+Follow the committee skill's procedure for everything not listed above — dispatch prompts, consolidation, discussion rounds, and final output format.
+
+### Dispatch Prompt Template
+
+```text
+You are a committee member conducting research on the following topic:
+
+Research question: {precise research question}
+Boundaries: {what is in scope; what is out of scope}
+Query type: {Technical Deep-Dive | Comparison | Process / How-To | Conceptual}
+Depth calibration: {focused | moderate | exhaustive}
+Known constraints: {codebase limits, deadlines, environment facts, or "none"}
+
+Write your response to: /memories/session/committee/draft-{member-name}.md
+
+Load the `committee-member` skill and follow Mode: Custom. Your workflow reference is `.github/skills/research/references/investigation-process.md` — read it and follow its full process (Scope → Investigate → Analyze → Draft → Self-Review).
+
+Custom format reference: .github/skills/research/references/report-formats.md
+Use the "{query type}" section from that file as the required structure for this draft.
+
+Rules: Do NOT read other members' draft files. Investigate independently.
+```
 
 ## What Good Research Looks Like
 
