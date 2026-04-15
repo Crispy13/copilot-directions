@@ -13,17 +13,17 @@ description: >-
 
 # Deliberate Dialog
 
-A protocol for iterative back-and-forth confirmation between the agent and user. Instead of a one-shot "here's the plan, confirm?" followed by immediate execution, this skill establishes a conversation loop where the user can refine, redirect, or reshape the agent's understanding before any action is taken.
+A protocol for iterative back-and-forth confirmation between the agent and user. Instead of a one-shot "here's the plan, confirm?" followed by immediate execution, this skill creates a conversation loop where the user can refine, redirect, or reshape the agent's understanding before any action is taken.
 
 ## Why This Exists
 
 LLM agents are eager to act. That eagerness is usually good — it means fast results. But it backfires when the agent misunderstands intent: tokens get burned, wrong files get modified, research goes in the wrong direction. The cost of a 30-second confirmation loop is trivial compared to the cost of undoing 5 minutes of wrong work.
 
-This skill is the structured version of "let's talk about this before you do it." It sits between understanding the request and executing it.
+This skill is the structured version of "let's talk about this before you do it." Use it between understanding the request and executing it.
 
 ## When to Use
 
-This skill is opt-in — agents and skills that want structured confirmation reference it explicitly. The situations where it pays for itself:
+This skill is opt-in — agents and skills that want structured confirmation reference it explicitly. Use it when the extra loop prevents avoidable mistakes:
 
 - **Pre-execution confirmation:** Plans, designs, or approaches that will be dispatched to implementation agents. The user should see and shape these before they become work.
 - **Destructive or expensive actions:** Deployments, deletions, large refactors, or anything that's hard to reverse. A quick loop catches "wait, not that database" moments.
@@ -56,14 +56,15 @@ then use `vscode_askQuestions` with concise questions.
 4. **In-loop actions** — When the user orders a bounded task that informs the discussion — "investigate X", "look into Y", "research this approach", "draft an alternative plan", "check if Z is feasible" — execute that task and return with the results as the next iteration. These tasks deepen the shared understanding; they are not exit signals. After completing the task, present the results and loop back to step 1.
 5. **Loop back** — Return to step 1 with the revised version or new findings. Never assume the discussion is over.
 
-The agent stays in this loop until the user explicitly exits. Do not auto-exit based on:
+Stay in this loop until the user explicitly exits. Do not auto-exit based on:
 - The user saying "looks good" without an exit trigger (they might have more to add)
 - Running out of things to ask about (the user decides when they're done, not you)
 - A feeling that "enough" iterations have passed
 - The agent completing an in-loop task (finishing a research or investigation task means looping back, not exiting)
 
 ### Exit
-You MUST not exit the loop without the second confirmation. (see below)
+
+Use a second confirmation before leaving the loop. That extra pause matters because phrases like "implement" or "go ahead" can blur together after several iterations, and the user should see exactly what workflow resumes next.
 
 Only **implementation-specific** signals exit the loop. The user is signaling they want code written, files changed, or systems affected:
 
@@ -75,15 +76,13 @@ Only **implementation-specific** signals exit the loop. The user is signaling th
 - If the user just pointed at a specific sub-task (investigate, research, plan, look into something), treat it as an in-loop action. Execute the task and loop back.
 - If it stands alone as a response to a plan or approach presentation with no sub-task in view, treat it as a potential exit and apply the second confirmation.
 
-On receiving a clear exit signal, ask for a second confirmation ("Are you sure to exit discussion-mode and proceed to implementation?"). If the user confirms, proceed immediately to the next workflow phase.
+On receiving a clear exit signal, recall the workflow you paused to enter discussion-mode. Identify the exact next phase or remaining steps after this checkpoint and use that in the second confirmation. You already have this context from your own instructions, so do not ask the caller to pass an extra parameter.
 
-### Behavior After Exit
+Use the confirmation in this shape: "Are you sure to exit discussion mode and proceed to {next workflow step or remaining steps} with the discussed {plan / design / result}?"
 
-Discussion-mode is a checkpoint inserted into a larger workflow — not a workflow of its own. When the user exits, **resume the caller's workflow at the exact step that follows the checkpoint.** Do not reinterpret the exit signal as a new instruction or skip ahead in the workflow.
+Example: suppose your workflow is Plan → Review → Implement and the discussion checkpoint sits after Plan. The confirmation becomes: "Are you sure to exit discussion mode and proceed to Review → Implement with the discussed plan?"
 
-The exit signal means "I approve what we discussed — now continue with your process." It does not mean "do whatever you think is best" or "skip ahead." Whatever the caller's workflow prescribes as the next step after the checkpoint, do that. Re-read your agent instructions if needed to recall where you left off.
-
-This matters because long discussion loops erode the agent's sense of place in the workflow. After several iterations of presenting, asking, and incorporating feedback, the agent can lose track of its caller's process and default to acting on its own. Explicitly returning to the caller's workflow prevents this drift.
+If the user confirms, resume at that next workflow step immediately. Treat the exit as approval to continue the caller's process, not as license to improvise, reinterpret the goal, or skip ahead.
 
 ### Practical Guidelines
 
@@ -105,7 +104,9 @@ Skills and agents that want discussion-mode at a checkpoint include a brief refe
 #### Confirmation Checkpoint
 Enter discussion-mode: present [the plan / the active plan / the approach] to the user
 and iterate via `vscode_askQuestions` until the user gives an explicit action trigger
-(e.g., "implement", "work", "go ahead"). See the `discussion-mode` skill for the full protocol.
+(e.g., "implement", "work", "go ahead"). When exiting, derive the confirmation message
+from your own workflow context so the user sees what happens next. See the `discussion-mode`
+skill for the full protocol.
 ```
 
 This keeps the referencing skill lean while pointing to a single source of truth for the loop behavior.
