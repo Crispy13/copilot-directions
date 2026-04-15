@@ -25,3 +25,14 @@ Make at least two subscriber init functions:
 3. Use `debug-release` profile for testing and debugging. If Cargo.toml does not have it, ask user to add it.
 
 4. Prefer enums or generic code over dynamic dispatch (trait objects) for better performance and compile-time checks.
+
+## Rust Ecosystem Version Pins
+
+These facts override your training data. Verify against live sources if uncertain.
+
+- **Current Rust edition:** 2024 (stabilized in Rust 1.85, February 2025)
+- **Previous editions:** 2015, 2018, 2021
+- **Stable toolchain:** Check `rustup show` for the user's installed version; do not assume a specific version number
+- **MSRV convention:** Use `rust-version` field in `Cargo.toml` (stabilized since Rust 1.56)
+- **Resolver:** v2 is default since edition 2021; do not add `resolver = "2"` explicitly for edition 2021+
+- **Edition in new projects:** `cargo init` and `cargo new` default to the latest stable edition

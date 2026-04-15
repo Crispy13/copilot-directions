@@ -1,7 +1,7 @@
 set -e
 
 echo "Updating submodules..."
-git submodule update --init --recursive
+git submodule update --init --recursive --remote
 
 # skill copy function
 update_skill() {
