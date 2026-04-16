@@ -3,7 +3,7 @@ name: CodeReviewer
 description: "Use when: reviewing code changes for correctness, plan adherence, and quality. Read-only — cannot modify files. Internal subagent — invoked by Orchestrator only."
 user-invocable: false
 tools: ['search','read','execute/getTerminalOutput','execute/testFailure', vscode/memory, vscode/resolveMemoryFileUri]
-model: ['Claude Opus 4.6 (fast mode) (Preview) (copilot)','Claude Opus 4.6 (copilot)', 'GPT-5.4 (copilot)']
+model: 'Claude Opus 4.7 (copilot)'
 ---
 
 # Code Reviewer
