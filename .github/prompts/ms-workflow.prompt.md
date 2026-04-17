@@ -72,16 +72,16 @@ Run at the start of every session.
 2. **(Optional) Research** — If the milestone is complex, touches unfamiliar domains, or the user explicitly requests research: invoke the `research` skill to investigate before planning. Save the report to `<mission>/copilot-desk/research/{milestone-slug}.md`. Pass the report file path to the planning step so the active plan is grounded in the research findings. Skip this step for straightforward milestones where existing context is sufficient.
 3. Break the milestone into a working plan with backlog items, context, and acceptance criteria. If a research report exists from step 2, include its file path when planning.
 4. Write `copilot-active-plan.md`.
-5. **Director Review** — Read `copilot-active-plan.md`. Validate against the context gathered earlier in this phase; fix issues and improve the plan directly if needed. Then proceed.
-6. **Rubber Duck Review** — Invoke the *RubberDuck* subagent (or equivalent cross-model reviewer) with the path to `copilot-active-plan.md`. If the verdict is `CONCERNS`, review each concern and either: (a) fix the active plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
+5. **Director Review** — You MUST read `copilot-active-plan.md` and validate it against the context gathered earlier in this phase. Do not proceed without completing this step. Fix issues and improve the plan directly if needed. If you skip it, downstream errors compound.
+6. **Rubber Duck Review** — You MUST invoke the *RubberDuck* subagent (or equivalent cross-model reviewer) with the path to `copilot-active-plan.md`. Do not skip this step even if the plan seems straightforward — the value is in cross-model perspective, not complexity. If the verdict is `CONCERNS`, review each concern and either: (a) fix the active plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
 
 #### 1c: Stage Planning
 
 1. Review `copilot-active-plan.md` to identify the next backlog item.
 2. Produce a stage plan — a single focused sub-goal with: objective, context, files to modify/create, acceptance criteria, tests (if applicable).
 3. Write `copilot-stage-plan.md`.
-4. **Director Review** — Read `copilot-stage-plan.md`. Validate against the active plan and context gathered; fix issues and improve the plan directly if needed. Then proceed.
-5. **Rubber Duck Review** — Invoke the *RubberDuck* subagent (or equivalent cross-model reviewer) with the path to `copilot-stage-plan.md`. If the verdict is `CONCERNS`, review each concern and either: (a) fix the stage plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
+4. **Director Review** — You MUST read `copilot-stage-plan.md` and validate it against the active plan and context gathered. Do not proceed without completing this step. Fix issues and improve the plan directly if needed. If you skip it, downstream errors compound.
+5. **Rubber Duck Review** — You MUST invoke the *RubberDuck* subagent (or equivalent cross-model reviewer) with the path to `copilot-stage-plan.md`. Do not skip this step even if the plan seems straightforward — the value is in cross-model perspective, not complexity. If the verdict is `CONCERNS`, review each concern and either: (a) fix the stage plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
 
 > **One backlog item = one stage.** Do not bundle multiple items.
 
@@ -89,7 +89,16 @@ Run at the start of every session.
 
 **Execute the stage using your own agent's implementation and review process.** This prompt does not define how you implement — your agent instructions do. What this prompt requires:
 
+- **Recall Persona** — You MUST re-read the top of your own agent file (your `.agent.md`) before starting each stage. This is not optional — context drift causes step skipping, and re-reading your workflow is the fix.
 - The stage plan file path (`<mission>/copilot-stage-plan.md`) defines the scope. When delegating to subagents, pass the **file path** — do not paste stage plan content inline. Subagents must read the file themselves.
+- **Pre-Dispatch Checkpoint** — Before dispatching work to any implementation subagent, output this in chat:
+  > **Checkpoint: Stage — {Title}**
+  > - Persona: re-read ✓
+  > - Stage plan: `<mission>/copilot-stage-plan.md` ✓
+  > - Director review: {pass | fixed: brief note} ✓
+  > - Rubber Duck: {no concerns | addressed: brief note} ✓
+
+  If you cannot fill in a line, you skipped a step — go back and complete it.
 - When execution completes (your process approves the work):
 
 1. Mark `copilot-stage-plan.md` as `STATUS: COMPLETE`.
@@ -238,3 +247,4 @@ Run at the start of every session.
 - **Mission isolation.** Only access the resolved `<mission>` folder and `copilot-office/codebase/`. Never read other mission folders unless the user explicitly asks.
 - **Respect the hierarchy.** One stage at a time. One backlog item per stage. Don't mix stage work with goal-level planning.
 - **Auto-continue.** After completing a stage, immediately plan and execute the next one. Don't stop to report unless the active goal is done or the user interrupts.
+- **Never skip workflow steps.** Director Review, Rubber Duck Review, and Recall Persona exist to catch errors that compound downstream. Skipping them to "save time" is a false economy — it causes rework that costs more than the review. If a step seems unnecessary for a simple task, run it anyway; the cost is low and the habit prevents skipping on complex tasks where it matters.
