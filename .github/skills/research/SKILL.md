@@ -43,7 +43,7 @@ See [report formats](./references/report-formats.md) for the template for each q
 
 ### 0. Confirm Intent
 
-Before spending tokens on investigation, enter discussion-mode: present your understanding of the research question, proposed scope, and query type to the user and iterate via `vscode_askQuestions` until the user gives an explicit action trigger (e.g., "go ahead", "research it", "investigate"). See the `discussion-mode` skill for the full protocol. This prevents wasting effort on a misunderstood direction — a 30-second confirmation loop is cheaper than a wrong report.
+Before spending tokens on investigation, enter discussion-mode: present your understanding of the research question, proposed scope, and query type to the user and iterate via `vscode_askQuestions` until the user gives an explicit action trigger. Treat that trigger as the first step of a two-step exit: ask the `discussion-mode` confirmation question, remain in the loop, and only investigate after the user explicitly confirms. See the `discussion-mode` skill for the full protocol. This prevents wasting effort on a misunderstood direction — a 30-second confirmation loop is cheaper than a wrong report.
 
 ### 1–4. Investigate and Write
 
