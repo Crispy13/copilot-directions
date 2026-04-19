@@ -64,16 +64,9 @@ Stay in this loop until the user explicitly exits. Do not auto-exit based on:
 
 ### Exit
 
-Use a strict second confirmation before leaving the loop. That extra pause matters because phrases like "implement" or "go ahead" can blur together after several iterations, and the user should see exactly what workflow resumes next.
+Exit is a two-step handshake. The reason this matters: phrases like "implement it" or "go ahead" can blur together with casual feedback after many iterations, and the user should see exactly what workflow resumes and explicitly confirm it before anything executes.
 
-Treat exit as a two-step handshake:
-
-1. **Potential exit signal** — the user gives an implementation-specific or explicit discussion-ending instruction.
-2. **Explicit confirmation** — you ask the second-confirmation question and stay in discussion-mode.
-
-The first message never exits by itself. It only arms a pending-exit state and causes you to ask the second-confirmation question.
-
-Only **implementation-specific** signals exit the loop. The user is signaling they want code written, files changed, or systems affected:
+**Step 1 — Detect a potential exit signal.** Only these count:
 
 - Implementation commands: "implement [it]", "build it", "ship it", "write the code", "make the changes", "apply [it]", "code it up", "deploy it"
 - Explicit discussion enders: "end discuss", "done discussing", "that's all"
@@ -81,22 +74,20 @@ Only **implementation-specific** signals exit the loop. The user is signaling th
 
 **Ambiguous phrases** — "do it", "go ahead", "proceed", "work", "start", "execute" — are context-dependent:
 - If the user just pointed at a specific sub-task (investigate, research, plan, look into something), treat it as an in-loop action. Execute the task and loop back.
-- If it stands alone as a response to a plan or approach presentation with no sub-task in view, treat it as a potential exit and apply the second confirmation.
+- If it stands alone as a response to a plan or approach presentation with no sub-task in view, treat it as a potential exit signal and move to step 2.
 
-On receiving a clear exit signal, recall the workflow you paused to enter discussion-mode. Identify the exact next phase or remaining steps after this checkpoint and use that in the second confirmation. You already have this context from your own instructions, so do not ask the caller to pass an extra parameter.
+**Step 2 — Ask the second-confirmation question via `vscode_askQuestions`.** This is a real question that requires a real answer. Recall the workflow you paused to enter discussion-mode, identify the exact next phase or remaining steps, and use that in the question header:
 
-Use the confirmation in this shape: "Are you sure to exit discussion mode and proceed to {next workflow step or remaining steps} with the discussed {plan / design / result}?"
+```
+"Are you sure to exit discussion mode and proceed to {next workflow step} with the discussed {plan / design / result}?"
+```
 
-Example: suppose your workflow is Plan → Review → Implement and the discussion checkpoint sits after Plan. The confirmation becomes: "Are you sure to exit discussion mode and proceed to Review → Implement with the discussed plan?"
+Example: workflow is Plan → Review → Implement, checkpoint sits after Plan:
+`"Are you sure to exit discussion mode and proceed to Review → Implement with the discussed plan?"`
 
-Only an explicit reply to that second-confirmation question exits the loop. Accept clear confirmations like "yes", "confirm", "exit discussion mode", or a restatement of the exact next step. Do not treat the original exit signal as both the trigger and the confirmation, even if the wording was strong.
+Crucially, calling `vscode_askQuestions` ends your current turn and waits for the user's reply. Do not write anything after the question — no "I'll now begin...", no summary, no partial execution. The question is the entire message.
 
-If the user answers the second-confirmation question with anything other than a clear confirmation, cancel the pending exit and continue the loop:
-- If they refine the plan, incorporate the change and present the update.
-- If they ask for a bounded task, run it as an in-loop action and return with results.
-- If they answer ambiguously, ask a focused follow-up and remain in discussion-mode.
-
-Never combine the second-confirmation question with resumed execution in the same message. Ask the confirmation, wait for the explicit second reply, then resume at the next workflow step immediately. Treat the exit as approval to continue the caller's process, not as license to improvise, reinterpret the goal, or skip ahead.
+**Step 3 — Act on the user's reply to that question.** If the reply is a clear confirmation ("yes", "confirm", "go ahead with that", or a restatement of the next step): exit discussion-mode and resume the workflow immediately. If it is anything else — a refinement, a bounded task, an ambiguous phrase — cancel the pending exit, handle it as a normal loop iteration, and loop back to step 1 of the protocol.
 
 ### Practical Guidelines
 
@@ -118,10 +109,11 @@ Skills and agents that want discussion-mode at a checkpoint include a brief refe
 #### Confirmation Checkpoint
 Enter discussion-mode: present [the plan / the active plan / the approach] to the user
 and iterate via `vscode_askQuestions` until the user gives an explicit action trigger.
-Treat that trigger as the first step of a two-step exit: ask the second-confirmation question,
-stay in discussion-mode, and exit only after the user explicitly confirms the follow-up
-question. Derive the confirmation message from your own workflow context so the user sees what
-happens next. See the `discussion-mode` skill for the full protocol.
+Treat that trigger as the first step of a two-step exit: use `vscode_askQuestions` to ask
+the second-confirmation question, end the message there (no execution yet), and exit only
+after the user explicitly confirms that follow-up question in a separate reply.
+Derive the confirmation from your own workflow context so the user sees what happens next.
+See the `discussion-mode` skill for the full protocol.
 ```
 
 This keeps the referencing skill lean while pointing to a single source of truth for the loop behavior.
