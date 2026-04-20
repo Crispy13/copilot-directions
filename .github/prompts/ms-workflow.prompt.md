@@ -73,7 +73,7 @@ Run at the start of every session.
 3. Break the milestone into a working plan with backlog items, context, and acceptance criteria. If a research report exists from step 2, include its file path when planning.
 4. Write `copilot-active-plan.md`.
 5. **Director Review** — You MUST read `copilot-active-plan.md` and validate it against the context gathered earlier in this phase. Do not proceed without completing this step. Fix issues and improve the plan directly if needed. If you skip it, downstream errors compound.
-6. **Rubber Duck Review** — You MUST invoke the *RubberDuck* subagent (or equivalent cross-model reviewer) with the path to `copilot-active-plan.md`. Do not skip this step even if the plan seems straightforward — the value is in cross-model perspective, not complexity. If the verdict is `CONCERNS`, review each concern and either: (a) fix the active plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
+6. **Rubber Duck Review (Direction)** — You MUST invoke the *RubberDuck* subagent (or equivalent cross-model reviewer) with the path to `copilot-active-plan.md` and **review mode: direction**. Do not skip this step even if the plan seems straightforward — the value is in cross-model perspective, not complexity. If the verdict is `CONCERNS`, review each concern and either: (a) fix the active plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
 
 #### 1c: Stage Planning
 
@@ -81,7 +81,7 @@ Run at the start of every session.
 2. Produce a stage plan — a single focused sub-goal with: objective, context, files to modify/create, acceptance criteria, tests (if applicable).
 3. Write `copilot-stage-plan.md`.
 4. **Director Review** — You MUST read `copilot-stage-plan.md` and validate it against the active plan and context gathered. Do not proceed without completing this step. Fix issues and improve the plan directly if needed. If you skip it, downstream errors compound.
-5. **Rubber Duck Review** — You MUST invoke the *RubberDuck* subagent (or equivalent cross-model reviewer) with the path to `copilot-stage-plan.md`. Do not skip this step even if the plan seems straightforward — the value is in cross-model perspective, not complexity. If the verdict is `CONCERNS`, review each concern and either: (a) fix the stage plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
+5. **Rubber Duck Review (Compliance)** — You MUST invoke the *RubberDuck* subagent (or equivalent cross-model reviewer) with the path to `copilot-stage-plan.md`, **review mode: compliance**, and the **reference plan: `copilot-active-plan.md`** (user-confirmed). Do not skip this step even if the plan seems straightforward — the value is in cross-model perspective, not complexity. The RubberDuck will check that the stage plan correctly implements the confirmed active plan — it will not challenge the active plan's direction. If the verdict is `CONCERNS`, review each concern and either: (a) fix the stage plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
 
 > **One backlog item = one stage.** Do not bundle multiple items.
 
