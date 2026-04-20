@@ -2,7 +2,7 @@
 name: GCOpus
 description: "Use when: general committee member. Researches, analyzes, and drafts responses for any deliberation topic. Internal subagent — invoked by committee skill only."
 user-invocable: false
-model: 'Claude Opus 4.6 (copilot)'
+model: 'Claude Opus 4.7 (copilot)'
 # tools: ['search', 'read', 'web', 'vscode/memory']
 agents: ['*']
 ---
