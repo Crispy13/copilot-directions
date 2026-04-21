@@ -41,6 +41,8 @@ The key question is some variant of: "Here's what I'm thinking. What would you c
 
 ### Loop
 
+**Loop invariant.** You are inside discussion-mode. You cannot leave this loop on your own. The only way out is the explicit Exit trigger defined below (an end-of-discussion phrase like "end discussion") followed by a dedicated confirmation reply from the user. Any other user message — no matter how action-like it sounds — is in-loop content. Treat "implement it", "go ahead", "build it", "ship it", "do it", "proceed", "start", "execute" as refinement or as in-loop actions, not as exit signals.
+
 Each iteration follows the same cycle:
 
 1. **Present** — Save the current version of whatever you're confirming (plan, approach, interpretation) to memory. Then show the path and summarized content in chat. Don't write this to question title.
@@ -53,30 +55,31 @@ then use `vscode_askQuestions` with concise questions.
 </Present-Example>
 2. **Ask** — Use `vscode_askQuestions` to invite feedback. Frame questions to surface disagreement: offer alternatives, ask about specific concerns, or highlight assumptions you're unsure about.
 3. **Incorporate** — Apply the user's feedback. If the feedback is vague, ask a focused follow-up rather than guessing.
-4. **In-loop actions** — When the user orders a bounded task that informs the discussion — "investigate X", "look into Y", "research this approach", "draft an alternative plan", "check if Z is feasible" — execute that task and return with the results as the next iteration. These tasks deepen the shared understanding; they are not exit signals. After completing the task, present the results and loop back to step 1.
+4. **In-loop actions** — When the user orders a bounded task that informs the discussion — "investigate X", "look into Y", "research this approach", "draft an alternative plan", "check if Z is feasible", or even "try a small implementation to test this idea" — execute that task and return with the results as the next iteration. These tasks deepen the shared understanding; they are not exit signals. Small, scoped implementation work is allowed inside discussion-mode when it helps validate an idea; it still does not end the loop. After completing the task, present the results and loop back to step 1.
 5. **Loop back** — Return to step 1 with the revised version or new findings. Never assume the discussion is over.
 
-Stay in this loop until the user explicitly exits. Do not auto-exit based on:
-- The user saying "looks good" without an exit trigger (they might have more to add)
-- Running out of things to ask about (the user decides when they're done, not you)
+Stay in this loop until the user triggers Exit explicitly. Do not auto-exit based on:
+- The user saying "looks good" or "that works" — feedback, not an exit signal
+- Action-words like "implement it", "go ahead", "build it" — in-loop content, not exit signals
+- Running out of things to ask about — the user decides when they're done, not you
 - A feeling that "enough" iterations have passed
-- The agent completing an in-loop task (finishing a research or investigation task means looping back, not exiting)
+- The agent completing an in-loop task — finishing means looping back, not exiting
 
 ### Exit
 
-Exit is a two-step handshake. The reason this matters: phrases like "implement it" or "go ahead" can blur together with casual feedback after many iterations, and the user should see exactly what workflow resumes and explicitly confirm it before anything executes.
+Exit requires two turns — one from the user to trigger it, one from the user to confirm it. The agent never exits on its own, and never collapses both turns into one.
 
-**Step 1 — Detect a potential exit signal.** Only these count:
+**Turn A — User triggers exit with an explicit end-of-discussion phrase.** Only these phrases qualify:
 
-- Implementation commands: "implement [it]", "build it", "ship it", "write the code", "make the changes", "apply [it]", "code it up", "deploy it"
-- Explicit discussion enders: "end discuss", "done discussing", "that's all"
-- Goal-oriented: "complete the goal", "finish this"
+- "end discussion" / "end discuss" / "done discussing"
+- "that's all"
+- "complete the goal" / "finish this"
 
-**Ambiguous phrases** — "do it", "go ahead", "proceed", "work", "start", "execute" — are context-dependent:
-- If the user just pointed at a specific sub-task (investigate, research, plan, look into something), treat it as an in-loop action. Execute the task and loop back.
-- If it stands alone as a response to a plan or approach presentation with no sub-task in view, treat it as a potential exit signal and move to step 2.
+No other phrase triggers exit. Action-words like "implement it", "go ahead", "build it", "ship it", "deploy it", "make the changes", "start work", "proceed", "execute", "do it" are **in-loop content**. If the user says one of those, treat it as refinement or as an in-loop action (see Loop step 4) — do not start the exit path.
 
-**Step 2 — Ask the second-confirmation question via `vscode_askQuestions`.** This is a real question that requires a real answer. Recall the workflow you paused to enter discussion-mode, identify the exact next phase or remaining steps, and use that in the question header:
+If the user wants to exit, they must say one of the explicit end-phrases above. If they repeatedly use action-words, you may gently note in chat "I'll stay in discussion-mode until you say 'end discussion'" — but do not exit.
+
+**Turn B — Agent asks the confirmation question via `vscode_askQuestions`.** When Turn A's trigger arrives, your very next message is the confirmation question and nothing else. Recall the workflow you paused to enter discussion-mode, name the exact next phase or remaining steps, and use that in the question header:
 
 ```
 "Are you sure to exit discussion mode and proceed to {next workflow step} with the discussed {plan / design / result}?"
@@ -85,9 +88,9 @@ Exit is a two-step handshake. The reason this matters: phrases like "implement i
 Example: workflow is Plan → Review → Implement, checkpoint sits after Plan:
 `"Are you sure to exit discussion mode and proceed to Review → Implement with the discussed plan?"`
 
-Crucially, calling `vscode_askQuestions` ends your current turn and waits for the user's reply. Do not write anything after the question — no "I'll now begin...", no summary, no partial execution. The question is the entire message.
+Calling `vscode_askQuestions` ends your turn and waits for the user's reply. Do not write anything after the question — no "I'll now begin...", no summary, no partial execution. The question is the entire message.
 
-**Step 3 — Act on the user's reply to that question.** If the reply is a clear confirmation ("yes", "confirm", "go ahead with that", or a restatement of the next step): exit discussion-mode and resume the workflow immediately. If it is anything else — a refinement, a bounded task, an ambiguous phrase — cancel the pending exit, handle it as a normal loop iteration, and loop back to step 1 of the protocol.
+**Turn C — User replies; agent acts on the reply.** If the reply is a clear confirmation ("yes", "confirm", "exit", a restatement of the next step), exit discussion-mode and resume the workflow. Any other reply — refinement, a bounded task, hesitation, an action-word — cancels the pending exit. Treat it as a normal loop iteration and loop back to Loop step 1.
 
 ### Practical Guidelines
 
@@ -108,12 +111,15 @@ Skills and agents that want discussion-mode at a checkpoint include a brief refe
 ```markdown
 #### Confirmation Checkpoint
 Enter discussion-mode: present [the plan / the active plan / the approach] to the user
-and iterate via `vscode_askQuestions` until the user gives an explicit action trigger.
-Treat that trigger as the first step of a two-step exit: use `vscode_askQuestions` to ask
-the second-confirmation question, end the message there (no execution yet), and exit only
-after the user explicitly confirms that follow-up question in a separate reply.
-Derive the confirmation from your own workflow context so the user sees what happens next.
-See the `discussion-mode` skill for the full protocol.
+and iterate via `vscode_askQuestions`. The only way out is an explicit end-of-discussion
+phrase from the user such as "end discussion", "done discussing", "that's all",
+"complete the goal", or "finish this". Action-words like "implement it", "go ahead",
+"build it", or "ship it" are in-loop content and never exit the loop — treat them as
+refinement or in-loop tasks. When the user does use an end-of-discussion phrase, your
+very next message is a `vscode_askQuestions` confirmation naming the next workflow step
+(derive it from your own workflow context), and nothing else — end the message there.
+Exit only after the user explicitly confirms that follow-up question in a separate
+reply. See the `discussion-mode` skill for the full protocol.
 ```
 
 This keeps the referencing skill lean while pointing to a single source of truth for the loop behavior.
@@ -125,3 +131,7 @@ This keeps the referencing skill lean while pointing to a single source of truth
 **Asking the same question repeatedly.** If the user already answered something, don't ask again in the next iteration. Track what's been settled.
 
 **Turning it into an interview.** Deliberate dialog is a refinement loop, not a requirements-gathering session. If you need to understand the problem from scratch, that's a different activity (brainstorming, research scoping). This skill assumes you already have a draft understanding and are confirming it.
+
+**Treating action-words as exit signals.** "Implement it", "go ahead", "build it", "ship it", "start work", "proceed", "execute", "do it" are NOT exit signals. They are in-loop content. Exiting the loop when the user says one of these — even after asking a confirmation question — is a protocol violation. Only the explicit end-of-discussion phrases trigger the exit path.
+
+**Collapsing Turn B and Turn C into one turn.** Your confirmation question in Turn B ends your turn. Writing anything after the `vscode_askQuestions` call — a summary, an "I'll now begin", a partial step — skips the user's reply and defeats the handshake. If you find yourself typing past the question, stop and delete what you wrote.

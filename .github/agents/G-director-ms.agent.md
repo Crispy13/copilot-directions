@@ -78,7 +78,7 @@ If no active goal is in progress:
 
 #### Confirmation Checkpoint
 
-Enter discussion-mode: present the active plan to the user and iterate via `vscode_askQuestions` until the user gives an explicit action trigger. Treat that trigger as the first step of a two-step exit: ask the `discussion-mode` confirmation question, remain in the loop, and only continue after the user explicitly confirms. See the `discussion-mode` skill for the full protocol.
+Enter discussion-mode: present the active plan to the user and iterate via `vscode_askQuestions`. The only way out is an explicit end-of-discussion phrase from the user such as "end discussion", "done discussing", "that's all", "complete the goal", or "finish this". Action-words like "implement it", "go ahead", "build it", or "ship it" are in-loop content and never exit the loop — treat them as refinement or in-loop tasks. When the user does use an end-of-discussion phrase, your very next message is a `vscode_askQuestions` confirmation naming the next workflow step (proceed to Stage Planning with the confirmed active plan), and nothing else — end the message there. Exit only after the user explicitly confirms that follow-up question in a separate reply. See the `discussion-mode` skill for the full protocol.
 
 
 #### 1c: Stage Planning

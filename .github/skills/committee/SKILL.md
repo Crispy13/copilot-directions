@@ -78,15 +78,30 @@ If the topic does not fit any built-in format, use **Default**.
 
 ## Procedure
 
+> **Cost expectation.** A committee run spans 4 parallel drafts, up to 3 discussion rounds of 4 responses each, and Chief consolidation — easily 16–20+ subagent calls. Reserve this skill for high-value, high-ambiguity questions where several independent perspectives are worth the cost. For straightforward questions, a single-model answer is more appropriate.
+
 ### Phase 1: Parallel Drafting
 
 Dispatch all 4 members in parallel with the same brief. Independent drafting matters because it gives the committee genuine diversity of reasoning before convergence begins.
 
 Each member independently:
-- Researches the codebase and external sources via Explore subagent
+- Researches the topic (codebase, docs, external sources as relevant) via Explore subagent
 - Analyzes the topic and forms a position
 - Drafts a structured response
 - Self-reviews and iterates before submitting
+
+#### Pre-Dispatch Confirmation (Mandatory)
+
+Before dispatching subagents, confirm the dispatch prompt with the user. This step is Chief-only — no subagents run yet. A brief confirmation loop here is far cheaper than 4 parallel misfires.
+
+1. Select the correct dispatch template below based on the format chosen (Plan uses the Plan template; all other formats use the default template).
+2. Fill in every variable — topic brief, format name, required headings, and (for custom format) the format reference path and section name.
+3. Save the fully instantiated prompt to `/memories/session/committee/dispatch-prompt.md`. This is the exact text that will be sent to all 4 members, with `{member-name}` replaced per dispatch.
+4. Show the path in chat and ask for confirmation via `vscode_askQuestions`: "Here is the dispatch prompt I'll send to all 4 members. Review it at `/memories/session/committee/dispatch-prompt.md`. Does it match your intent?"
+5. On confirmation → dispatch all 4 members using the saved prompt as-is.
+6. On correction → revise, overwrite the saved file, and ask again. Stay in the loop until the user confirms.
+
+Do not dispatch without an explicit confirmation reply. This step cannot be skipped.
 
 **Dispatch prompt for each member:**
 
@@ -99,7 +114,7 @@ You are a committee member drafting a plan for the following topic:
 
 Write your plan to: /memories/session/committee/draft-{member-name}.md
 
-Load the `committee-member` skill and follow Mode 3 (Planning). If the skill cannot be loaded, report the failure and stop. Research the codebase thoroughly before drafting.
+Load the `committee-member` skill and follow Mode 3 (Planning). If the skill cannot be loaded, report the failure and stop. Research thoroughly (codebase, docs, external sources as relevant) before drafting.
 
 Use the Topic Format Catalog section named: Plan
 Read the format catalog at ./references/format-catalog.md for the named section's template and quality guidance.
