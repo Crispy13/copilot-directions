@@ -19,6 +19,8 @@ This prompt and your agent's `.agent.md` serve different roles:
 
 **Drift Guard applies to both.** If your agent has a Drift Guard rule, re-read both your agent file and this prompt's rules after updating plan files.
 
+**Plan-File Authority (MANDATORY).** The plan files on disk (`copilot-project-plan.md`, `copilot-active-plan.md`, `copilot-stage-plan.md`) are the **single source of truth** for downstream subagents. Chat discussion, verbal agreements, and partial edits in your working memory are not authoritative. If your agent enters a user-confirmation or discussion phase (e.g., the `discussion-mode` skill), every agreed change MUST be written back to the relevant plan file **before** the next confirmation turn, and MUST be verified by re-reading the plan file before exiting discussion. If the user agrees to something in chat but the plan file doesn't reflect it, downstream subagents will work from the stale plan and produce the wrong output \u2014 and you won't notice until code-review or implementation reveals the drift. Treat every user-agreed change as a pending file edit you owe the plan file.
+
 ---
 
 ## Goal Hierarchy

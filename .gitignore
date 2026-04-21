@@ -1,5 +1,5 @@
 .github/copilot-instructions.md
 tmp/
 trashcan/
-.github/skills/discussion-mode/evals/evals.json
+.github/skills/*/evals/evals.json
 backup/

@@ -7,6 +7,7 @@ GENERAL_SKILLS=(
     skill-creator
     research
     discussion-mode
+    fit-skill-to-copilot
 )
 for skill in "${GENERAL_SKILLS[@]}"
 do
