@@ -88,16 +88,28 @@ Load the `committee` skill and apply these research-specific overrides:
 
 Follow the committee skill's procedure for everything not listed above — dispatch prompts, consolidation, discussion rounds, and final output format.
 
+### Authoring the Dispatch: Keep the Option Space Open
+
+**Do not pre-constrain the solution space in the dispatch.** When filling in `Research question` and `Boundaries`, describe the problem and the decision context. Do not list the candidate options as if they were the complete set — members must be free to discover alternatives. If the user named specific options, phrase them as *"options the user is already considering include X and Y"* rather than *"compare X vs Y"*. This matters most for Comparison and Conceptual queries, where the value of committee research comes from members independently surfacing options the orchestrator did not pre-list.
+
 ### Dispatch Prompt Template
 
 ```text
 You are a committee member conducting research on the following topic:
 
 Research question: {precise research question}
-Boundaries: {what is in scope; what is out of scope}
+Boundaries: {decision context and what is in/out of scope — NOT an option list}
 Query type: {Technical Deep-Dive | Comparison | Process / How-To | Conceptual}
 Depth calibration: {focused | moderate | exhaustive}
 Known constraints: {codebase limits, deadlines, environment facts, or "none"}
+
+Option-space rule: The "Boundaries" field describes the DECISION CONTEXT
+(the problem, the environment, the constraints) — NOT an exhaustive list of
+candidate solutions. If this is a Comparison or Conceptual query, treat any
+options mentioned in the question or boundaries as SEED candidates only.
+Your job is to discover additional options during investigation, not to
+rank only the ones listed. For Technical Deep-Dive and Process queries,
+follow the stated scope.
 
 Write your response to: /memories/session/committee/draft-{member-name}.md
 
