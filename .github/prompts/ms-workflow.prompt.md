@@ -8,34 +8,30 @@ You must follow the multi-session workflow defined below. This workflow governs 
 
 ## How This Prompt Relates to Your Agent Instructions
 
-This prompt and your agent's `.agent.md` serve different roles:
+- **This prompt = outer loop.** Controls *what* to work on next, *when* to start/stop a stage, and *how* to track progress across sessions.
+- **Your agent instructions = inner loop.** Control *how* you execute each stage — your team, delegation, review process.
 
-- **This prompt** = the **outer loop**. It controls *what* to work on next, *when* to start and stop a stage, and *how* to track progress across sessions.
-- **Your agent instructions** = the **inner loop**. They control *how* you execute each stage — your team, your delegation workflow, your review process.
+**The stage plan is the bridge.** When Phase 2 says "execute the stage," use your agent's own workflow to carry it out. `copilot-stage-plan.md` defines the **scope boundary** — do not work outside it. When your process approves the work, return to Phase 2's post-completion steps.
 
-**The stage plan is the bridge.** When Phase 2 says "execute the stage," use your agent's own workflow to carry it out. The `copilot-stage-plan.md` defines the **scope boundary** — do not work outside it. When your workflow completes (your own review/test process approves the work), return to Phase 2's post-completion steps.
-
-**Planning uses your available resources.** If your agent has a Planner subagent, use it for Phases 1a–1c. If not, plan directly using the tools you have.
+**Planning uses your available resources.** If your agent has a Planner subagent, use it for Phases 1a–1c. Otherwise, plan directly with the tools you have.
 
 **Drift Guard applies to both.** If your agent has a Drift Guard rule, re-read both your agent file and this prompt's rules after updating plan files.
 
-**Plan-File Authority (MANDATORY).** The plan files on disk (`copilot-project-plan.md`, `copilot-active-plan.md`, `copilot-stage-plan.md`) are the **single source of truth** for downstream subagents. Chat discussion, verbal agreements, and partial edits in your working memory are not authoritative. If your agent enters a user-confirmation or discussion phase (e.g., the `discussion-mode` skill), every agreed change MUST be written back to the relevant plan file **before** the next confirmation turn, and MUST be verified by re-reading the plan file before exiting discussion. If the user agrees to something in chat but the plan file doesn't reflect it, downstream subagents will work from the stale plan and produce the wrong output \u2014 and you won't notice until code-review or implementation reveals the drift. Treat every user-agreed change as a pending file edit you owe the plan file.
+**Plan-File Authority (MANDATORY).** The plan files on disk (`copilot-project-plan.md`, `copilot-active-plan.md`, `copilot-stage-plan.md`) are the single source of truth for downstream subagents. Chat discussion and verbal agreements are not authoritative. If your agent enters a user-confirmation or discussion phase (e.g., the `discussion-mode` skill), every agreed change MUST be written back to the relevant plan file **before** the next confirmation turn, and verified by re-reading before exiting discussion. If chat agrees to something but the plan file doesn't reflect it, downstream subagents work from the stale plan — you won't notice until review or implementation reveals the drift.
 
 ---
 
 ## Goal Hierarchy
 
-Organize work in three tiers using mission files:
-
 | Tier | File | Scope |
 |------|------|-------|
-| **Project Goal** | `<mission>/copilot-project-plan.md` | The big-picture objective. Rarely changes. |
-| **Active Goal** | `<mission>/copilot-active-plan.md` | The current milestone. Contains backlog, blockers, decisions, and context for resuming. |
-| **Stage Goal** | `<mission>/copilot-stage-plan.md` | A single backlog item — the unit of work you execute using your own process. |
+| **Project Goal** | `<mission>/copilot-project-plan.md` | Big-picture objective. Rarely changes. |
+| **Active Goal** | `<mission>/copilot-active-plan.md` | Current milestone. Contains backlog, blockers, decisions, resume context. |
+| **Stage Goal** | `<mission>/copilot-stage-plan.md` | Single backlog item — the unit of work you execute. |
 
 - `<mission>` = `copilot-office/missions/<mission-name>`
 - **Project Desk** (`<mission>/copilot-desk/`) — decisions, specs, scratchpad notes.
-- **Codebase Overview** (`copilot-office/codebase/CODEBASE.md`) — shared architecture and project structure.
+- **Codebase Overview** (`copilot-office/codebase/CODEBASE.md`) — shared architecture.
 
 ---
 
@@ -46,17 +42,17 @@ Organize work in three tiers using mission files:
 Run at the start of every session.
 
 1. **Resolve mission folder.** On first request, ask the user for the mission name. Otherwise resolve from conversation history.
-2. **Read context files** — only on first request or when you lack clear mission context. Skip if conversation already contains the information. Re-read a file only if it was modified since last read. Read in order:
+2. **Read context files** — only on first request or when you lack clear mission context. Skip if conversation already contains it; re-read a file only if modified since last read. Order:
    - `copilot-project-plan.md`
    - `copilot-active-plan.md`
    - `copilot-stage-plan.md` (if exists)
    - `copilot-office/codebase/CODEBASE.md`
-3. **Recall recent activity.** Read the last portion of the current session's log to recover context about recent actions referring to "troubleshoot" skill. Start with the tail; read more if needed.
+3. **Recall recent activity.** Read the tail of the current session's log to recover context (troubleshoot skill).
 4. **Determine entry point:**
-   - Stage plan is in-progress → **Phase 2** (resume execution).
-   - Stage plan is complete or missing → **Phase 1** (planning).
-   - Active goal is complete → **Phase 3** (goal advancement).
-   - No mission files → **Phase 1a** (project initialization).
+   - Stage plan in-progress → **Phase 2**.
+   - Stage plan complete or missing → **Phase 1**.
+   - Active goal complete → **Phase 3**.
+   - No mission files → **Phase 1a**.
 
 ### Phase 1: Planning
 
@@ -65,62 +61,83 @@ Run at the start of every session.
 1. Ask the user about the project goal and scope.
 2. Produce a project plan with milestones.
 3. Write `copilot-project-plan.md`.
-4. Create directory structure: `copilot-office/missions/<name>/copilot-desk/completed-stages/`.
-5. Initialize `copilot-office/codebase/CODEBASE.md` if it doesn't exist.
+4. Create directory: `copilot-office/missions/<name>/copilot-desk/completed-stages/`.
+5. Initialize `copilot-office/codebase/CODEBASE.md` if absent.
 
 #### 1b: Active Goal Selection
 
 1. Ask the user to confirm: review `copilot-project-plan.md` and identify the next milestone, or set the active goal from the user's request.
-2. **(Optional) Research** — If the milestone is complex, touches unfamiliar domains, or the user explicitly requests research: invoke the `research` skill to investigate before planning. Save the report to `<mission>/copilot-desk/research/{milestone-slug}.md`. Pass the report file path to the planning step so the active plan is grounded in the research findings. Skip this step for straightforward milestones where existing context is sufficient.
-3. Break the milestone into a working plan with backlog items, context, and acceptance criteria. If a research report exists from step 2, include its file path when planning.
+2. **(Optional) Research.** If the milestone is complex, touches unfamiliar domains, or the user requests it: invoke the `research` skill, save the report to `<mission>/copilot-desk/research/{milestone-slug}.md`, pass its path to planning. Skip for straightforward milestones.
+3. Break the milestone into a working plan (backlog, context, acceptance criteria). Include any research path.
 4. Write `copilot-active-plan.md`.
-5. **Director Review** — You MUST read `copilot-active-plan.md` and validate it against the context gathered earlier in this phase. Do not proceed without completing this step. Fix issues and improve the plan directly if needed. If you skip it, downstream errors compound.
-6. **Rubber Duck Review (Direction)** — You MUST invoke the *RubberDuck* subagent (or equivalent cross-model reviewer) with the path to `copilot-active-plan.md` and **review mode: direction**. Do not skip this step even if the plan seems straightforward — the value is in cross-model perspective, not complexity. If the verdict is `CONCERNS`, review each concern and either: (a) fix the active plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
+5. **Director Review.** Read the active plan yourself; validate against gathered context; fix directly.
+6. **Rubber Duck Review (Direction).** Invoke *RubberDuck* (or equivalent cross-model reviewer) with the active plan path and **review mode: direction**. If `CONCERNS`: fix valid ones or note why acceptable. If `NO_CONCERNS`: proceed.
 
 #### 1c: Stage Planning
 
-1. Review `copilot-active-plan.md` to identify the next backlog item.
-2. Produce a stage plan — a single focused sub-goal with: objective, context, files to modify/create, acceptance criteria, tests (if applicable).
+1. Review `copilot-active-plan.md` to pick the next backlog item.
+2. Produce a stage plan — objective, context, files to modify/create, acceptance criteria, tests if applicable.
 3. Write `copilot-stage-plan.md`.
-4. **Director Review** — You MUST read `copilot-stage-plan.md` and validate it against the active plan and context gathered. Do not proceed without completing this step. Fix issues and improve the plan directly if needed. If you skip it, downstream errors compound.
-5. **Rubber Duck Review (Compliance)** — You MUST invoke the *RubberDuck* subagent (or equivalent cross-model reviewer) with the path to `copilot-stage-plan.md`, **review mode: compliance**, and the **reference plan: `copilot-active-plan.md`** (user-confirmed). Do not skip this step even if the plan seems straightforward — the value is in cross-model perspective, not complexity. The RubberDuck will check that the stage plan correctly implements the confirmed active plan — it will not challenge the active plan's direction. If the verdict is `CONCERNS`, review each concern and either: (a) fix the stage plan directly if the concern is valid, or (b) note why the concern is acceptable. If the verdict is `NO_CONCERNS`, proceed.
+4. **Director Review.** Read the stage plan yourself; validate against the active plan; fix directly.
+5. **Rubber Duck Review (Compliance).** Invoke *RubberDuck* (or equivalent) with the stage plan path, **review mode: compliance**, and **reference plan: `copilot-active-plan.md`**. RubberDuck checks that the stage plan implements the confirmed active plan — it will not challenge the active plan's direction.
 
 > **One backlog item = one stage.** Do not bundle multiple items.
 
 ### Phase 2: Stage Execution
 
-**Execute the stage using your own agent's implementation and review process.** This prompt does not define how you implement — your agent instructions do. What this prompt requires:
+Execute the stage using your own agent's implementation and review process. This prompt does not define *how* you implement — your agent does. What this prompt requires:
 
-- **Recall Persona** — You MUST re-read the top of your own agent file (your `.agent.md`) before starting each stage. This is not optional — context drift causes step skipping, and re-reading your workflow is the fix.
-- The stage plan file path (`<mission>/copilot-stage-plan.md`) defines the scope. When delegating to subagents, pass the **file path** — do not paste stage plan content inline. Subagents must read the file themselves.
-- **Pre-Dispatch Checkpoint** — Before dispatching work to any implementation subagent, output this in chat:
+- **Recall Persona.** Re-read the top of your own `.agent.md` before starting each stage — context drift causes step skipping.
+- The stage plan **file path** (`<mission>/copilot-stage-plan.md`) defines the scope. When delegating, pass the file path — never paste inline. Subagents read the file themselves.
+- **Pre-Dispatch Checkpoint.** Before dispatching, output in chat:
   > **Checkpoint: Stage — {Title}**
   > - Persona: re-read ✓
   > - Stage plan: `<mission>/copilot-stage-plan.md` ✓
   > - Director review: {pass | fixed: brief note} ✓
   > - Rubber Duck: {no concerns | addressed: brief note} ✓
 
-  If you cannot fill in a line, you skipped a step — go back and complete it.
-- When execution completes (your process approves the work):
+  If any line can't be filled, you skipped a step — go back.
+
+When your process approves the work:
 
 1. Mark `copilot-stage-plan.md` as `STATUS: COMPLETE`.
-2. Update `copilot-active-plan.md`: mark backlog item done, note progress, update context.
+2. Update `copilot-active-plan.md`: mark backlog item done, update context.
 3. Update `copilot-office/codebase/CODEBASE.md` if architectural changes were made.
-4. Append a stage entry to `<mission>/copilot-work-report.md` (see Work Report format below).
-5. Archive completed stage plan to `<mission>/copilot-desk/completed-stages/`.
-6. Briefly notify the user (1-2 sentences), then:
-   - More backlog items remain → **immediately** proceed to Phase 1c. Do NOT stop.
-   - All items done → proceed to Phase 3.
+4. Append a stage entry to `<mission>/copilot-work-report.md` (see format below).
+5. Archive the completed stage plan to `<mission>/copilot-desk/completed-stages/`.
+6. Notify the user in 1-2 sentences, then:
+   - More backlog items → **immediately** go to Phase 1c. Do not wait.
+   - All items done → Phase 3.
 
-> **Auto-continuation:** Keep looping through stages until the active goal is complete or the user interrupts.
+> **Auto-continuation:** Keep looping through stages until the active goal completes or the user interrupts.
 
 ### Phase 3: Goal Advancement
 
 1. Mark `copilot-active-plan.md` as `STATUS: COMPLETE`.
 2. Update `copilot-project-plan.md`: mark milestone done, note learnings.
 3. Finalize the Work Report — add a summary section at the top.
-4. Present milestone summary to the user.
-5. Return to Phase 1b for the next active goal.
+4. Present the milestone summary to the user (1-3 sentences).
+5. **Project-completion check.** Re-read `copilot-project-plan.md`. If all milestones are complete → **Phase 4**. Otherwise → Phase 1b (auto-continue, do not wait).
+
+### Phase 4: Project Completion (MANDATORY)
+
+Triggered only when all milestones in `copilot-project-plan.md` are complete. The project is NOT done until the user confirms exit via `discussion-mode`'s Turn C. Skipping Phase 4 is a protocol violation.
+
+Enter discussion-mode presenting:
+
+- The completed `copilot-project-plan.md` (all milestones checked, project-level learnings).
+- A pointer to the final `copilot-work-report.md` and archived reports in `<mission>/copilot-desk/completed-reports/`.
+- A brief project roll-up in chat (3-6 bullets: what was built, notable decisions, known follow-ups).
+
+Follow the `discussion-mode` skill. Exit requires an end-of-discussion phrase ("end discussion", "done discussing", "that's all", "complete the goal", "finish this") — action-words ("looks good", "ship it", "thanks") are in-loop content. On end-phrase, next message is a standalone `vscode_askQuestions` confirmation ("Are you sure to exit discussion mode and sign off the project?") and nothing else; exit only after the user confirms in a separate reply.
+
+**User-requested changes during Phase 4.** Never implement directly. Add the change as a new backlog item in `copilot-active-plan.md` (revive or create an active goal if needed); un-mark the relevant project milestone if appropriate. Spawn a fresh Phase 1c → Phase 2 sub-cycle. When the stage completes and Phase 3 re-runs, re-enter Phase 4 with an updated roll-up.
+
+**Plan-File Authority (Phase 4).** Every user-agreed change during Phase 4 must be written to the relevant file (project plan, active plan, work report, new stage plan) BEFORE the next `vscode_askQuestions` turn. Re-read before Turn B.
+
+**Self-check before declaring project complete.** Turn A end-phrase ✓, Turn B standalone confirmation ✓, Turn C user approval ✓ — all three or you're still in-loop.
+
+After exit: add final sign-off notes to `copilot-project-plan.md`, present the final completion message, halt auto-continuation. Do not re-enter Phase 1b.
 
 ---
 
@@ -132,7 +149,7 @@ Run at the start of every session.
 # Stage: {Title}
 
 **Status:** IN-PROGRESS | COMPLETE
-**Parent Goal:** {Active goal / backlog item reference}
+**Parent Goal:** {active goal / backlog item reference}
 **Created:** {Date}
 **Last Updated:** {Date}
 
@@ -140,7 +157,7 @@ Run at the start of every session.
 {What this stage achieves}
 
 ## Context
-{Relevant background, related files, constraints, prior decisions}
+{Background, related files, constraints, prior decisions}
 
 ## Files to Modify/Create
 - `path/to/file.ext` — {what needs to change}
@@ -239,14 +256,15 @@ Run at the start of every session.
 ...
 ```
 
-> **One report per active goal.** Archive previous to `copilot-desk/completed-reports/` when starting a new goal.
+> **One report per active goal.** Archive the previous to `copilot-desk/completed-reports/` when starting a new goal.
 
 ---
 
 ## Workflow Constraints
 
 - **Persist relentlessly.** Every meaningful state change must be written to disk. A new session must resume cleanly from files alone.
-- **Mission isolation.** Only access the resolved `<mission>` folder and `copilot-office/codebase/`. Never read other mission folders unless the user explicitly asks.
+- **Mission isolation.** Only access the resolved `<mission>` folder and `copilot-office/codebase/`. Never read other missions unless the user asks.
 - **Respect the hierarchy.** One stage at a time. One backlog item per stage. Don't mix stage work with goal-level planning.
-- **Auto-continue.** After completing a stage, immediately plan and execute the next one. Don't stop to report unless the active goal is done or the user interrupts.
-- **Never skip workflow steps.** Director Review, Rubber Duck Review, and Recall Persona exist to catch errors that compound downstream. Skipping them to "save time" is a false economy — it causes rework that costs more than the review. If a step seems unnecessary for a simple task, run it anyway; the cost is low and the habit prevents skipping on complex tasks where it matters.
+- **Auto-continue.** After a stage completes, immediately plan and execute the next one. Do not stop to report unless the active goal is done or the user interrupts.
+- **Never skip workflow steps.** Director Review, Rubber Duck Review, and Recall Persona catch errors that compound downstream. Cross-model perspective matters even for simple-looking tasks.
+- **Phase 4 is mandatory at project completion.** Finalizing the last milestone's work report in Phase 3 is not the end. The project is complete only after Phase 4's discussion-mode exit (Turn A end-phrase + Turn B confirmation + Turn C user approval). Skipping Phase 4 — declaring the project done or halting without discussion-mode on the project-level result — is a protocol violation.
