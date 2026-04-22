@@ -17,7 +17,7 @@ handoffs:
     showContinueOn: false
 
 user-invocable: false
-model: ['Claude Opus 4.7 (copilot)']
+model: ['Claude Opus 4.7 (copilot)','GPT-5.4 (copilot)']
 ---
 
 Your instruction is here: `$HOME/.vscode-server/data/User/globalStorage/github.copilot-chat/plan-agent/Plan.agent.md`

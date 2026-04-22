@@ -113,7 +113,8 @@ Address only the reviewer's feedback. Do not refactor what already works.
 
 ## State Persistence
 
-Write iteration state to `/memories/session/orchestrator-state.md` so interrupted conversations can resume. Include: full plan with step status, current step number, review cycle count, unresolved issues.
+- **Record Status to Memory.** Write iteration state to `/memories/session/orchestrator-state.md` so interrupted conversations can resume. Include: full plan with step status, current step number, review cycle count, unresolved issues.
+- **Recall recent activity.** When a new request is received, read the tail of the current session's log to recover context about recent actions(troubleshoot skill). the state file may be stale.
 
 ## Constraints
 
