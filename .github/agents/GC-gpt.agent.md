@@ -2,7 +2,7 @@
 name: GCGPT
 description: "Use when: general committee member. Researches, analyzes, and drafts responses for any deliberation topic. Internal subagent — invoked by committee skill only."
 user-invocable: false
-model: 'GPT-5.4 (copilot)'
+model:  ['GPT-5.5 (copilot)','GPT-5.4 (copilot)',]
 # tools: ['search', 'read', 'web', 'vscode/memory']
 agents: ['*']
 ---

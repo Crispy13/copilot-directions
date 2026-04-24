@@ -2,7 +2,7 @@
 name: RubberDuck
 description: "Use when: cross-model plan critique. Reads a plan and returns a short, focused list of concerns — missed assumptions, edge cases, questionable decisions, architectural issues. Internal subagent — invoked by orchestrator only."
 user-invocable: false
-model: 'GPT-5.4 (copilot)'
+model:  ['GPT-5.5 (copilot)','GPT-5.4 (copilot)',]
 tools: [vscode/memory, vscode/resolveMemoryFileUri, execute, read, browser, search, web]
 ---
 
