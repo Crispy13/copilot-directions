@@ -33,10 +33,11 @@ This skill is opt-in — agents and skills that want structured confirmation ref
 
 ## Vocabulary
 
-Two fixed lists are referenced throughout the protocol:
+Three fixed lists are referenced throughout the protocol:
 
 - **End-of-discussion phrases** (the only phrases that trigger Exit Turn A): *"end discussion"*, *"end discuss"*, *"done discussing"*, *"that's all"*, *"complete the goal"*, *"finish this"*.
 - **Action-words** (always in-loop content, never exit): *"implement it"*, *"go ahead"*, *"build it"*, *"ship it"*, *"deploy it"*, *"make the changes"*, *"start work"*, *"proceed"*, *"execute"*, *"do it"*.
+- **DMAF suffix** (opt-in post-work re-entry, attached to a Turn A end-phrase): *"DMAF"*, *"discuss after"*, *"discuss results"*. See `DMAF` under Exit.
 
 Anything the user says that isn't an end-phrase is in-loop content — feedback, a bounded task, a pause, or an action-word. None of them exit the loop.
 
@@ -87,6 +88,16 @@ Calling `vscode_askQuestions` ends your turn. The reason Turn B is standalone is
 
 **Self-check before resuming workflow.** Before dispatching a subagent, running a workflow step, or sending the final summary, verify: Turn B standalone confirmation sent ✓, Turn C user approval received ✓. If either is missing, you are still in-loop — send Turn B now.
 
+#### DMAF — Discussion-Mode After Finish (opt-in, one-shot)
+
+If Turn A includes a DMAF alias (*"DMAF"*, *"discuss after"*, *"discuss results"*) appended to the end-phrase — e.g., *"end discussion DMAF"* — the agent:
+
+1. **Sets a one-shot DMAF flag** in session memory (e.g., `/memories/session/dmaf-flag.md`).
+2. **Runs Turn B/C unchanged.** The handshake is not skipped; mention DMAF in the Turn B header so the contract is visible.
+3. **At workflow finish**, instead of declaring complete, **re-enters discussion-mode on the results** via the standard caller template, then **clears the flag**.
+
+**One-shot:** the flag is consumed at first finish. A later end-phrase without DMAF exits cleanly. Inside the re-entered loop the user may attach DMAF again to chain another round; each round is independent.
+
 ### Practical Guidelines
 
 - **Stay neutral.** The user may be right or wrong; so may you. Don't follow opinions blindly; don't assume your own is always correct.
@@ -109,7 +120,12 @@ refinement or in-loop tasks. When the user does use an end-of-discussion phrase,
 very next message is a `vscode_askQuestions` confirmation naming the next workflow step
 (derive it from your own workflow context), and nothing else — end the message there.
 Exit only after the user explicitly confirms that follow-up question in a separate
-reply. See the `discussion-mode` skill for the full protocol.
+reply.
+
+If the user attaches a DMAF suffix ("DMAF", "discuss after", "discuss results") to
+their end-phrase, set a one-shot DMAF flag and re-enter discussion-mode on the results
+when the work finishes (instead of declaring complete); clear the flag at re-entry. See
+the `discussion-mode` skill for the full protocol.
 ```
 
 This keeps referencing skills lean while pointing to a single source of truth for the loop behavior.
@@ -125,3 +141,4 @@ These are failure modes that recur in practice. They all stem from the loop's in
 - **Implicit exit via prose-only response.** Pause replies feel polite to answer with "waiting for you" in prose, but that drops the widget and breaks the mechanic. Acknowledge inside `vscode_askQuestions` instead.
 - **Skipping or bundling Turn B.** Receiving an end-phrase and going directly to workflow — dispatching, running tasks, or bundling the Turn B question with partial execution "to save a round trip" — exits the loop illegally. The end-phrase alone does not exit; Turn B is the gate.
 - **Agreeing in chat without updating the backing file.** "I'll update the plan when we're done discussing" is a desync. Downstream subagents read the file; update it before the next turn.
+- **Ignoring DMAF at finish.** If the user attached DMAF on Turn A, declare-and-stop is a protocol violation — re-enter discussion-mode on the results. The flag is one-shot: do not carry it forward, and do not invent a flag the user did not attach.
