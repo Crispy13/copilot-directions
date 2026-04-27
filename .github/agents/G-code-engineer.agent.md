@@ -3,7 +3,7 @@ name: CodeEngineer
 description: "Use when: implementing code changes from subplans. Writes code, runs tests, fixes bugs. Internal subagent — invoked by Orchestrator only."
 user-invocable: false
 tools: ['search','read','edit','execute','web',vscode/memory, vscode/resolveMemoryFileUri]
-model:  ['GPT-5.5 (copilot)','GPT-5.4 (copilot)',]
+model:  'GPT-5.4 (copilot)'
 
 ---
 
