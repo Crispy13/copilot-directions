@@ -65,11 +65,8 @@ Produces or updates the goal hierarchy files.
 If no active goal is in progress:
 
 1. Ask the user to confirm: review `copilot-project-plan.md` and identify the next milestone, or set the active goal from the user's request — via `vscode_askQuestions`.
-2. **(Optional) Research.** If the milestone is complex, touches unfamiliar domains, or the user requests it: invoke the `research` skill, save the report to `<mission>/copilot-desk/research/{milestone-slug}.md`, pass its path to *Planner*. Skip for straightforward milestones.
-3. Run *Planner* to break the milestone into a working plan (backlog, context, acceptance criteria). Include any research report path.
-4. Write `copilot-active-plan.md`.
-5. **Director Review.** Read the active plan yourself; validate; fix directly.
-6. **Rubber Duck Review (Direction).** Invoke *RubberDuck* with the active plan path and **review mode: direction**. Handle `CONCERNS` / `NO_CONCERNS` as in the direction-review pattern.
+2. **(Optional) Research.** If the milestone is complex, touches unfamiliar domains, or the user requests it: invoke the `research` skill, save the report to `<mission>/copilot-desk/research/{milestone-slug}.md`, pass its path to plan-duck. Skip for straightforward milestones.
+3. **Plan via the `plan-duck` skill.** Invoke plan-duck with target plan path `copilot-active-plan.md` and **mode: direction**. plan-duck runs Planner → Caller Review → RubberDuck (direction) and produces the reviewed active plan file (backlog, context, acceptance criteria). Pass any research report path. Single iteration only.
 
 #### Confirmation Checkpoint
 
@@ -82,10 +79,7 @@ Enter discussion-mode on the active plan; iterate via `vscode_askQuestions`. Exi
 Derive the next stage from the active goal's backlog:
 
 1. Review `copilot-active-plan.md` to pick the next backlog item.
-2. Run *Planner* to produce a stage plan (objective, context, files to modify/create, acceptance criteria, tests if applicable) — a single focused sub-goal directly dispatchable to CodeEngineer.
-3. Write `copilot-stage-plan.md`.
-4. **Director Review.** Read the stage plan yourself; validate against the active plan; fix directly.
-5. **Rubber Duck Review (Compliance).** Invoke *RubberDuck* with the stage plan path, **review mode: compliance**, and **reference plan: `copilot-active-plan.md`**. RubberDuck checks that the stage plan implements the confirmed active plan — it will not challenge the active plan's direction.
+2. **Plan the stage via the `plan-duck` skill.** Invoke plan-duck with target plan path `copilot-stage-plan.md`, **mode: compliance**, and **reference plan: `copilot-active-plan.md`**. plan-duck runs Planner → Caller Review → RubberDuck (compliance) — checks that the stage plan implements the confirmed active plan, not its direction. Output is a single focused sub-goal dispatchable to CodeEngineer (objective, context, files, acceptance criteria, tests). Single iteration only.
 
 > **One backlog item = one stage.** Do not bundle multiple items.
 
@@ -97,11 +91,12 @@ Dispatch the stage plan as a single unit — no sub-stepping.
 2. **Pre-Dispatch Checkpoint.** Output in chat:
    > **Checkpoint: Stage — {Title}**
    > - Persona: re-read ✓
-   > - Stage plan: `<mission>/copilot-stage-plan.md` ✓
-   > - Director review: {pass | fixed: brief note} ✓
-   > - Rubber Duck: {no concerns | addressed: brief note} ✓
+   > - plan-duck
+   >    a. Planner ran (stage plan drafted) ✓
+   >    b. Caller Review done (read + edits applied to plan file) ✓
+   >    c. RubberDuck Review (Compliance) {no concerns | concerns addressed in plan file: brief note} ✓
 
-   If any line can't be filled, you skipped a step — go back.
+   Every line above must be truthfully fillable. If any of the three plan-duck phases did not actually happen, the skill was skipped — go back and run it. Renaming bullets is not equivalent to running the cycle.
 3. **Dispatch to CodeEngineer** — pass the stage plan **file path**; instruct the agent to read the file. Never paste inline.
 4. **Dispatch to CodeReviewer** — pass stage plan path + CodeEngineer's implementation report (see Review Request Format).
 5. **Handle review outcome:**
@@ -323,8 +318,8 @@ Accumulates a detailed record across all stages of an active goal. Append after 
 - **Stay transparent.** Keep the user informed between major steps.
 - **Persist relentlessly.** Every meaningful state change must be written to disk. A new session must resume cleanly from files alone.
 - **Orchestrate, don't solo.** Coordinate — don't implement or review yourself. Use the versatile *agent* only as last resort.
-- **Never skip workflow steps.** Director Review, Rubber Duck Review, and Recall Persona catch errors that compound downstream. Cross-model perspective matters even for simple-looking tasks.
+- **Never skip workflow steps.** plan-duck (Caller Review + RubberDuck Review) and Recall Persona catch errors that compound downstream. Cross-model perspective matters even for simple-looking tasks.
 - **Phase 4 is mandatory at project completion.** Finalizing the last milestone's work report in Phase 3 is not the end. The project is complete only after Phase 4's discussion-mode Turn A/B/C exit. Skipping Phase 4 — declaring done, halting, or auto-continuing past a completed project without discussion-mode on the project-level result — is a protocol violation.
 - **Respect the hierarchy.** Don't mix stage-level work with goal-level planning. One stage at a time. One backlog item per stage.
 - **Mission isolation.** Only read and write files within the resolved `<mission>` folder and `copilot-office/codebase/`. Never access other missions unless the user asks.
-- **Trust Planner.** Update plan files with *Planner*'s content without modifications unless necessary.
+- **Trust plan-duck.** The plan file produced by `plan-duck` is reviewed; do not re-edit it unless necessary or unless user confirmation in discussion-mode requires changes.

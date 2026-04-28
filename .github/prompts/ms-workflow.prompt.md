@@ -67,19 +67,13 @@ Run at the start of every session.
 #### 1b: Active Goal Selection
 
 1. Ask the user to confirm: review `copilot-project-plan.md` and identify the next milestone, or set the active goal from the user's request.
-2. **(Optional) Research.** If the milestone is complex, touches unfamiliar domains, or the user requests it: invoke the `research` skill, save the report to `<mission>/copilot-desk/research/{milestone-slug}.md`, pass its path to planning. Skip for straightforward milestones.
-3. Break the milestone into a working plan (backlog, context, acceptance criteria). Include any research path.
-4. Write `copilot-active-plan.md`.
-5. **Director Review.** Read the active plan yourself; validate against gathered context; fix directly.
-6. **Rubber Duck Review (Direction).** Invoke *RubberDuck* (or equivalent cross-model reviewer) with the active plan path and **review mode: direction**. If `CONCERNS`: fix valid ones or note why acceptable. If `NO_CONCERNS`: proceed.
+2. **(Optional) Research.** If the milestone is complex, touches unfamiliar domains, or the user requests it: invoke the `research` skill, save the report to `<mission>/copilot-desk/research/{milestone-slug}.md`, pass its path to plan-duck. Skip for straightforward milestones.
+3. **Plan via the `plan-duck` skill.** Invoke plan-duck with target plan path `copilot-active-plan.md` and **mode: direction**. plan-duck runs the Planner → Caller Review → RubberDuck (direction) loop and produces the reviewed active plan file (backlog, context, acceptance criteria). Pass any research report path. Single iteration only.
 
 #### 1c: Stage Planning
 
 1. Review `copilot-active-plan.md` to pick the next backlog item.
-2. Produce a stage plan — objective, context, files to modify/create, acceptance criteria, tests if applicable.
-3. Write `copilot-stage-plan.md`.
-4. **Director Review.** Read the stage plan yourself; validate against the active plan; fix directly.
-5. **Rubber Duck Review (Compliance).** Invoke *RubberDuck* (or equivalent) with the stage plan path, **review mode: compliance**, and **reference plan: `copilot-active-plan.md`**. RubberDuck checks that the stage plan implements the confirmed active plan — it will not challenge the active plan's direction.
+2. **Plan the stage via the `plan-duck` skill.** Invoke plan-duck with target plan path `copilot-stage-plan.md`, **mode: compliance**, and **reference plan: `copilot-active-plan.md`**. plan-duck runs Planner → Caller Review → RubberDuck (compliance) — checks the stage plan implements the confirmed active plan, not its direction. Output: objective, context, files to modify/create, acceptance criteria, tests if applicable — a single focused sub-goal directly dispatchable. Single iteration only.
 
 > **One backlog item = one stage.** Do not bundle multiple items.
 
@@ -92,11 +86,12 @@ Execute the stage using your own agent's implementation and review process. This
 - **Pre-Dispatch Checkpoint.** Before dispatching, output in chat:
   > **Checkpoint: Stage — {Title}**
   > - Persona: re-read ✓
-  > - Stage plan: `<mission>/copilot-stage-plan.md` ✓
-  > - Director review: {pass | fixed: brief note} ✓
-  > - Rubber Duck: {no concerns | addressed: brief note} ✓
+  > - plan-duck
+  >    a. Planner ran (stage plan drafted) ✓
+  >    b. Caller Review done (read + edits applied to plan file) ✓
+  >    c. RubberDuck Review (Compliance) {no concerns | concerns addressed in plan file: brief note} ✓
 
-  If any line can't be filled, you skipped a step — go back.
+  Every line above must be truthfully fillable. If any of the three plan-duck phases did not actually happen, the skill was skipped — go back and run it. Renaming bullets is not equivalent to running the cycle.
 
 When your process approves the work:
 
@@ -266,5 +261,5 @@ After exit: add final sign-off notes to `copilot-project-plan.md`, present the f
 - **Mission isolation.** Only access the resolved `<mission>` folder and `copilot-office/codebase/`. Never read other missions unless the user asks.
 - **Respect the hierarchy.** One stage at a time. One backlog item per stage. Don't mix stage work with goal-level planning.
 - **Auto-continue.** After a stage completes, immediately plan and execute the next one. Do not stop to report unless the active goal is done or the user interrupts.
-- **Never skip workflow steps.** Director Review, Rubber Duck Review, and Recall Persona catch errors that compound downstream. Cross-model perspective matters even for simple-looking tasks.
+- **Never skip workflow steps.** plan-duck (Caller Review + RubberDuck Review) and Recall Persona catch errors that compound downstream. Cross-model perspective matters even for simple-looking tasks.
 - **Phase 4 is mandatory at project completion.** Finalizing the last milestone's work report in Phase 3 is not the end. The project is complete only after Phase 4's discussion-mode exit (Turn A end-phrase + Turn B confirmation + Turn C user approval). Skipping Phase 4 — declaring the project done or halting without discussion-mode on the project-level result — is a protocol violation.
