@@ -9,6 +9,7 @@ GENERAL_SKILLS=(
     research
     discussion-mode
     plan-duck
+    rubberduck-review
 )
 for skill in "${GENERAL_SKILLS[@]}"
 do
