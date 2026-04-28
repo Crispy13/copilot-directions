@@ -2,4 +2,5 @@
 tmp/
 trashcan/
 .github/skills/*/evals/evals.json
+.github/skills/rubberduck-review-workspace
 backup/
