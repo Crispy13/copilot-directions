@@ -1,6 +1,7 @@
 ---
 name: rubberduck-review
 description: "Use when: you want a second opinion, want to rubber duck a plan or implementation, want to critique my work, want a review before I run something, need a post-implementation check, need a post-tests pre-run check, feel stuck or looping, or want an on-demand cross-family critique. Trigger for plan, implementation, tests, and stuck checkpoints, plus explicit on-demand review requests. Prefer the plan-duck skill for the plan checkpoint when you need the structured Direction/Compliance planning flow; use this skill for lighter ad-hoc plan critique only."
+context: fork
 ---
 
 # Rubberduck Review
