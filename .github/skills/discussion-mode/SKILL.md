@@ -37,11 +37,13 @@ Two fixed lists are referenced throughout the protocol:
 
 - **End-of-discussion phrases** (the only phrases that trigger Exit Turn A): *"end discussion"*, *"end discuss"*, *"done discussing"*, *"that's all"*, *"complete the goal"*, *"finish this"*.
 - **Action-words** (always in-loop content, never exit): *"implement it"*, *"go ahead"*, *"build it"*, *"ship it"*, *"deploy it"*, *"make the changes"*, *"start work"*, *"proceed"*, *"execute"*, *"do it"*.
-- **DMAF aliases** ("discussion-mode after finish"): *"DMAF"*, *"dmaf"*, *"discuss after"*, *"discuss results"*, *"discuss when done"*. This means after the post-Turn-C work completes, enter discussion-mode again using this skill.
+- **DMAF aliases** ("discussion-mode after finish"): *"DMAF"*, *"dmaf"*, *"discuss after"*, *"discuss results"*, *"discuss when done"*. This means after the post-Turn-C work completes, enter discussion-mode again using this skill. **On DMAF re-entry, re-read this skill file before calling `vscode_askQuestions` for the first time** — context compression during the preceding task may have eroded the loop invariants.
 
 ## The Protocol
 
 ### Entry
+
+> **DMAF re-entry:** If you are returning to discussion-mode after completing work (triggered by a DMAF alias), re-read this skill file *now* — before calling `vscode_askQuestions` — to restore the loop invariants and exit protocol in context.
 
 Present your current understanding — a plan, a design, a proposed approach, or a restated interpretation of their request — via `vscode_askQuestions`. Frame it as a discussion point, not a final answer. The key question is some variant of: "Here's what I'm thinking. What would you change?"
 
