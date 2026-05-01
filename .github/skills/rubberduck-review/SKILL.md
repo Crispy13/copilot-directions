@@ -1,6 +1,6 @@
 ---
 name: rubberduck-review
-description: "Use when: you want a second opinion, want to rubber duck a plan or implementation, want to critique my work, want a review before I run something, need a post-implementation check, need a post-tests pre-run check, feel stuck or looping, or want an on-demand cross-family critique. Trigger for plan, implementation, tests, and stuck checkpoints, plus explicit on-demand review requests. Prefer the plan-duck skill for the plan checkpoint when you need the structured Direction/Compliance planning flow; use this skill for lighter ad-hoc plan critique only."
+description: "Use when: you want a second opinion, want to rubber duck a plan or implementation, want to critique my work, want a review before I run something, need a post-implementation check, need a post-tests pre-run check, feel stuck or looping, or want an on-demand cross-family critique. Trigger for plan, implementation, tests, and stuck checkpoints, plus explicit on-demand review requests."
 context: fork
 ---
 
@@ -20,7 +20,6 @@ Use this skill at these checkpoints and on demand:
 - `stuck`: when progress is looping and you need a different angle
 - on-demand: any explicit request for a second opinion, rubber duck, critique, or focused review
 
-For the `plan` checkpoint, prefer the `plan-duck` skill when you need the structured planning flow. `plan-duck` already wraps Planner, caller review, and RubberDuck direction/compliance review. Use `rubberduck-review` only for lighter ad-hoc plan critique.
 
 ## Cross-Family Agent Selection
 
@@ -45,8 +44,6 @@ All prompts follow this shape:
 ## Per-Checkpoint Guidance
 
 ### Plan
-
-Prefer `plan-duck` for plan-stage review. Use this skill only when you want a lighter ad-hoc critique instead of the structured Direction/Compliance flow.
 
 ```javascript
 runSubagent({
