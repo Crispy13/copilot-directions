@@ -1,15 +1,16 @@
 ---
 name: plan-duck
-description: Produce a planning artifact that has been reviewed by both the caller and a separate cross-model RubberDuck critic before the caller commits to it. ANY agent — orchestrator or plain Copilot — should reach for this skill whenever planning is on the table, instead of drafting a plan solo. Trigger when the user asks for a plan, roadmap, phased rollout, or step-by-step approach ("plan this", "make a plan", "outline the steps", "how would you approach X", "design an approach"), AND also when the agent is about to plan on its own initiative for a non-trivial change — refactors, migrations, multi-file features, design changes, or anything where a single Planner pass might miss assumptions or edge cases. The skill exists because a Planner-only output is often confidently wrong; a Caller Review plus a RubberDuck Review catch direction errors and architectural blind spots before any work starts. Do NOT use for trivial single-step changes that don't need a plan.
+description: Produce a planning artifact that has been reviewed by both the caller and a separate cross-model RubberDuck critic before the caller commits to it. ANY agent — orchestrator or plain Copilot — should reach for this skill whenever planning is on the table, instead of drafting a plan solo. Trigger when the user asks for a plan, roadmap, phased rollout, or step-by-step approach ("plan this", "make a plan", "outline the steps", "how would you approach X", "design an approach"), AND also when the agent is about to plan on its own initiative for a non-trivial change — refactors, migrations, multi-file features, design changes, or anything where a solo draft might miss assumptions or edge cases. The skill exists because a solo plan draft is often confidently wrong; a Caller Review plus a RubberDuck Review catch direction errors and architectural blind spots before any work starts. Do NOT use for trivial single-step changes that don't need a plan.
+context: fork
 ---
 
 # Plan-Duck
 
-A planning recipe that runs the **Planner → Caller Review → RubberDuck Review** sequence on a single plan file before the caller acts on it. The output is one mutated plan file at a known path; the two review passes leave their marks on the plan itself, not in separate files.
+A planning recipe that runs the **Draft → Caller Review → RubberDuck Review** sequence on a single plan file before the caller acts on it. The output is one mutated plan file at a known path; the two review passes leave their marks on the plan itself, not in separate files.
 
 ## Why this exists
 
-A solo Planner pass tends to produce plans that *look* coherent but quietly skip assumptions, miss edge cases, or take questionable architectural turns. Two cheap, structurally different reviews catch most of these:
+A solo plan draft tends to produce plans that *look* coherent but quietly skip assumptions, miss edge cases, or take questionable architectural turns. Two cheap, structurally different reviews catch most of these:
 
 - **Caller Review** — the calling agent re-reads the plan against the context it already has (files seen, constraints stated by the user, prior conversation). It catches plans that drift from what the user actually asked for.
 - **RubberDuck Review** — a separate cross-model critic that has *not* seen the planning conversation. It catches plans that are internally consistent but architecturally suspect, missing failure modes, or built on shaky assumptions.
@@ -22,9 +23,12 @@ The caller invokes plan-duck whenever a plan is needed. The skill handles its ow
 
 ## Procedure
 
-### 1. Run Planner
+### 1. Draft the Plan
 
-Invoke `runSubagent({agentName: "Planner", ...})` with the user's request, the relevant context the caller has gathered, and an explicit instruction to write the **full plan** to a known plan-file path (default: `/memories/session/plan.md`).
+Follow the instructions of `$HOME/.vscode-server/data/User/globalStorage/github.copilot-chat/plan-agent/Plan.agent.md`
+to write the **full plan** to a known plan-file path (default: `/memories/session/plan.md`).
+
+If you can't resolve the path, then stop and report that you can't find base planning instructions.
 
 The plan must contain:
 - A numbered list of steps.
@@ -45,18 +49,18 @@ Apply fixes **directly to the plan file**. Do not produce a separate review docu
 
 ### 3. RubberDuck Review
 
-Invoke `runSubagent({agentName: "RubberDuck", ...})` with:
+Invoke the `rubberduck-review` skill at the `plan` checkpoint with:
 
 - The plan file path.
-- **Review mode: `direction`** (default — full-plan review focused on direction, assumptions, and architecture). Use `compliance` only when reviewing a sub-plan against an already-approved parent plan; for a fresh plan, always use `direction`.
 - Any context the caller wants the duck to weigh (e.g., "this plan must work without breaking the existing CI pipeline").
+- **If reviewing a sub-plan against an already-approved parent plan:** include the parent plan path and note the compliance intent — e.g., *"This is a sub-plan for step N of the parent plan at `<parent-path>`. Review for compliance with the parent's scope and constraints, not just standalone direction."*
 
-RubberDuck returns either `NO_CONCERNS` or `CONCERNS` (a short focused list).
+The skill returns `VERDICT: NO_CONCERNS` or `VERDICT: CONCERNS` with mitigations.
 
 **Handling the response:**
 
-- `NO_CONCERNS` → proceed.
-- `CONCERNS` → for each concern, either:
+- `VERDICT: NO_CONCERNS` → proceed.
+- `VERDICT: CONCERNS` → for each concern, either:
   - **Fix it** by editing the plan file directly, or
   - **Record why it's acceptable** as a short note inside the plan (e.g., `> RubberDuck noted X; accepted because Y`).
 
@@ -64,7 +68,7 @@ Do not produce a separate review document. Everything lives in the plan file.
 
 ### 4. Single iteration
 
-This skill runs the cycle exactly once: Planner → Caller Review → RubberDuck Review → done. Do **not** loop the reviews until both reviewers say `NO_CONCERNS`. One pass through both reviewers is the contract; if downstream work reveals the plan was wrong, a fresh plan-duck invocation produces the next plan.
+This skill runs the cycle exactly once: Draft → Caller Review → RubberDuck Review → done. Do **not** loop the reviews until both reviewers say `NO_CONCERNS`. One pass through both reviewers is the contract; if downstream work reveals the plan was wrong, a fresh plan-duck invocation produces the next plan.
 
 ## Output
 
@@ -90,7 +94,7 @@ Skills and agents that want plan-duck at a planning checkpoint can include a sho
 
 ```markdown
 #### Planning
-Use the `plan-duck` skill to produce the plan: it will run Planner, then your Caller
-Review pass on the plan file, then a RubberDuck Review (mode: direction). Apply fixes
+Use the `plan-duck` skill to produce the plan: it will have you draft the plan, then your Caller
+Review pass on the plan file, then a RubberDuck Review via the `rubberduck-review` skill. Apply fixes
 directly to the plan file. The artifact is one plan file at /memories/session/plan.md.
 ```
