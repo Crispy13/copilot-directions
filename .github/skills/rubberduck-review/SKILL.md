@@ -1,10 +1,16 @@
 ---
 name: rubberduck-review
-description: "Use when: you want a second opinion, want to rubber duck a plan or implementation, want to critique my work, want a review before I run something, need a post-implementation check, need a post-tests pre-run check, feel stuck or looping, or want an on-demand cross-family critique. Trigger for plan, implementation, tests, and stuck checkpoints, plus explicit on-demand review requests."
+description: "Use when: you want a second opinion, want to rubber duck a plan or implementation, want to critique my work, want a review before I run something, need a post-implementation check, need a post-tests pre-run check, feel stuck or looping, or want an on-demand cross-family critique. Trigger for plan, implementation, tests, and stuck checkpoints, plus explicit on-demand review requests. Do not invoke this skill from inside an active rubberduck-review run; once this skill is loaded, dispatch directly to G-Claude or G-GPT instead of calling rubberduck-review again."
 context: fork
 ---
 
 # Rubberduck Review
+
+## Execution Boundary
+
+Only the outer caller invokes this skill. Once this `SKILL.md` is loaded, you are already inside `rubberduck-review`; do not invoke `rubberduck-review` again, even if the task still sounds like a second-opinion trigger. Select the opposite-family reviewer agent and call `runSubagent` directly using the matching prompt below.
+
+Prompts sent to `G-Claude` or `G-GPT` should not ask those agents to invoke this skill. They are reviewers only: read the artifacts, apply the scan list, and return the verdict format.
 
 ## Why This Exists
 
@@ -51,6 +57,8 @@ runSubagent({
   prompt: `
 You are a cross-family second-opinion reviewer. You are not the author. Read the artifact in full, then surface concrete concerns the author may have missed. Do not restate or rewrite the artifact.
 
+Important: You are already inside rubberduck-review; do not invoke rubberduck-review again. 
+
 Mode: plan
 
 Artifacts:
@@ -82,6 +90,8 @@ runSubagent({
   agentName,
   prompt: `
 You are a cross-family second-opinion reviewer. You are not the author. Read every changed file and the subplan in full, then surface concrete concerns the author may have missed. Do not restate or rewrite the code.
+
+Important: You are already inside rubberduck-review; do not invoke rubberduck-review again. 
 
 Mode: implementation
 
@@ -116,6 +126,8 @@ runSubagent({
   prompt: `
 You are a cross-family second-opinion reviewer. You are not the author. Read every test file and the acceptance criteria in full, then surface concrete concerns about the test strategy and assertions. Do not restate or rewrite the tests.
 
+Important: You are already inside rubberduck-review; do not invoke rubberduck-review again. 
+
 Mode: tests
 
 Artifacts:
@@ -147,6 +159,8 @@ runSubagent({
   agentName,
   prompt: `
 You are a cross-family second-opinion reviewer. You are not the author. Read the stuck-state brief and any referenced artifacts in full, then surface concrete alternatives and missed angles. Do not restate the brief.
+
+Important: You are already inside rubberduck-review; do not invoke rubberduck-review again. 
 
 Mode: stuck
 
