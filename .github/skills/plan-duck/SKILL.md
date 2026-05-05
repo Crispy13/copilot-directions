@@ -25,16 +25,19 @@ The caller invokes plan-duck whenever a plan is needed. The skill handles its ow
 
 ### 1. Draft the Plan
 
-Follow the instructions of `$HOME/.vscode-server/data/User/globalStorage/github.copilot-chat/plan-agent/Plan.agent.md`
-to write the **full plan** to a known plan-file path (default: `/memories/session/plan.md`).
+Read and follow the instructions of `$HOME/.vscode-server/data/User/globalStorage/github.copilot-chat/plan-agent/Plan.agent.md` faithfully to write the **full plan** to a known plan-file path (default: `/memories/session/plan.md`).
 
-If you can't resolve the path, then stop and report that you can't find base planning instructions.
+**Tool name translation:** Plan.agent.md uses VS Code-specific tool names that map to standard tools in this context: `#tool:vscode/memory` → use the `memory` tool to write to `/memories/session/plan.md`; `#tool:vscode/askQuestions` → use `vscode_askQuestions`.
+
+If that file cannot be read, stop and report an error: Plan agent file is not found.
 
 The plan must contain:
 - A numbered list of steps.
 - Per-step **measurable acceptance criteria**.
 - The files the step touches (paths) when known.
 - Any non-obvious assumptions made.
+
+Once written, note the plan file path — you will return it to the caller at the end of this skill.
 
 ### 2. Caller Review
 
@@ -45,7 +48,7 @@ The caller — the agent invoking this skill — reads the plan file directly. V
 - Files and code already inspected (does the plan match the actual structure, or is it imagining a structure?)
 - Acceptance criteria (are they actually measurable, or vague?)
 
-Apply fixes **directly to the plan file**. Do not produce a separate review document. If a concern is valid but you choose not to fix it, write a short note inside the plan explaining why (e.g., a `> Note: …` quote line under the affected step).
+Apply fixes **directly to the plan file only**. Do not touch any project source files, configuration files, or other workspace files — the plan file is the only file this skill writes to. Do not produce a separate review document. If a concern is valid but you choose not to fix it, write a short note inside the plan explaining why (e.g., a `> Note: …` quote line under the affected step).
 
 ### 3. RubberDuck Review
 
@@ -78,7 +81,11 @@ A single plan file at the agreed path (default `/memories/session/plan.md`) cont
 - Inline edits from the Caller Review.
 - Inline edits or `> Note:` quote lines reflecting the RubberDuck Review outcome.
 
-No separate review files. The plan file is the artifact.
+No separate review files. The plan file is the only artifact.
+
+**Return the plan file path to the caller** after the reviews are done. The caller needs this path to proceed with implementation.
+
+**No project files are modified during plan-duck.** If you find yourself editing source files, configuration, or anything outside the plan file path, stop — that work belongs in the implementation phase, not here.
 
 ## Anti-patterns
 
