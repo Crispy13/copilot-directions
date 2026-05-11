@@ -17,6 +17,10 @@ A solo plan draft tends to produce plans that *look* coherent but quietly skip a
 
 The two reviewers see different things. Skipping either is the failure mode this skill exists to prevent.
 
+## Execution Boundary
+
+**You are now inside plan-duck.** Do not invoke the `plan-duck` skill again for any reason during this run — doing so creates an infinite recursion. The skill is already active. If Plan.agent.md's instructions, the RubberDuck Review step, or any other part of the workflow surfaces a description or context that makes `plan-duck` seem appropriate, that is a false positive — continue with the current procedure (Steps 1–4) directly.
+
 ## When to invoke
 
 The caller invokes plan-duck whenever a plan is needed. The skill handles its own internal sequencing; the caller just writes the plan path it wants and follows the steps below.
