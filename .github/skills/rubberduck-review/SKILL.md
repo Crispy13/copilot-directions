@@ -1,7 +1,7 @@
 ---
 name: rubberduck-review
 description: "Use when: you want a second opinion, want to rubber duck a plan or implementation, want to critique my work, want a review before I run something, need a post-implementation check, need a post-tests pre-run check, feel stuck or looping, or want an on-demand cross-family critique. Trigger for plan, implementation, tests, and stuck checkpoints, plus explicit on-demand review requests. Do not invoke this skill from inside an active rubberduck-review run; once this skill is loaded, dispatch directly to G-Claude or G-GPT instead of calling rubberduck-review again."
-context: fork
+# context: fork
 ---
 
 # Rubberduck Review
