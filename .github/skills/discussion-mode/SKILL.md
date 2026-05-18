@@ -71,6 +71,8 @@ Each iteration follows the same cycle:
 **Keep the backing artifact in sync.** If the discussion is about a file-backed artifact (plan file, design doc, spec), every user-agreed change must be written to the file **before** the next `vscode_askQuestions` turn. Downstream subagents read the file, not the chat — a verbal-only agreement is a silent desync that doesn't surface until implementation produces the wrong output. Before Turn B, re-read the file and confirm every agreed change is present. (If the discussion is about an unwritten idea with no backing file, this doesn't apply.)
 
 ### Exit
+In discussion-mode, "exit" means ending your turn without calling `vscode_askQuestions`.
+> Example: You said "I won't exit discussion mode" in chat, without using `vscode_askQuestions`. You said I won't exit but you actually did exit, because you didn't use the question tool.
 
 Exit requires two turns — one from the user to trigger it, one from the user to confirm it. Collapsing them, or skipping Turn B, exits the loop illegally and defeats the whole purpose of the handshake.
 
