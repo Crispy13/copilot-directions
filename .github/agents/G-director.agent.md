@@ -2,7 +2,7 @@
 name: 🌯GeneralDirector
 description: "Use when: managing multi-step tasks end-to-end. Plans work, directs Code Engineer to implement, routes changes through Code Reviewer. Entry point for all complex tasks."
 argument-hint: Describe the task or goal to accomplish
-agents: ['CodeEngineer', 'CodeReviewer', 'Planner', 'RubberDuck', 'agent', 'Explore']
+agents: ['CodeEngineer', 'CodeReviewer', 'Planner', 'agent', 'Explore', 'G-GPT', 'G-Claude',]
 model: [GPT-5.5 (copilot), GPT-5.4 (copilot)]
 disable-model-invocation: true
 ---
